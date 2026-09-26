@@ -1,0 +1,76 @@
+# Gluon-Patches: Fehlerbehebungen
+
+*Patches for Gluon v2023.2.x / OpenWrt 23.05 that fix system behaviour
+independent of the device: relief for 64 MB devices, boot stalls, tunneldigger
+retries, config-mode wizard, and two package patches. Used by Freifunk im
+Neanderland (Neanderfunk). Each script can be used on its own; `apply.sh`
+applies all of them in order.*
+
+Korrekturen am Systemverhalten, unabhängig vom Gerät. Nichts davon hängt an
+den Paketen oder der Site-Konfiguration von Neanderfunk.
+
+Die Zweige folgen Gluon: `v2023.2.x` passt zu Gluon v2023.2.x (OpenWrt 23.05,
+Kernel 5.15).
+
+## Anwenden
+
+Alles auf einmal, aus dem Gluon-Verzeichnis:
+
+```
+cd gluon
+<dieses Repo>/apply.sh pre-update
+make update
+<dieses Repo>/apply.sh post-update
+```
+
+`pre-update` legt Dateien unter `patches/packages` im Gluon-Baum ab, die
+`make update` per `git am` auf die Paket-Module einspielt. Alles andere läuft
+danach, weil `make update` die Module neu aufsetzt.
+
+Einzeln: das Skript samt seiner Patchdateien und `lib-patch.sh` kopieren,
+Struktur `<gruppe>/…` und `lib-patch.sh` eine Ebene darüber beibehalten, und
+aus dem Gluon-Verzeichnis aufrufen, etwa `cd gluon && <repo>/lowmem/sysctl-no-watermark-boost-64mb.sh`.
+Die Skripte sind idempotent: Ist ein Patch schon drin, melden sie das und
+machen weiter. Scheitert einer, brechen sie mit Fehler ab.
+
+## Inhalt
+
+| Skript | Phase | Zweck | Herkunft, Ende |
+| --- | --- | --- | --- |
+| `package-fixes/add-gluon-airtime-plausible.sh` | pre-update | respondd-module-airtime: busy/rx/tx größer als active weglassen (mt76 meldet untergelaufene Survey-Zähler, Karten zeigen sonst Kanalauslastung weit über 100 %) | |
+| `package-fixes/add-ffac-package-patches.sh` | pre-update | ffac-mt7915-maxinactivity je Radio statt je Build-Target | |
+| `bugfixes/tunneldigger-reinit-backoff.sh` | pre-update | tunneldigger: Reinit mit Pause, kein modprobe für ein fehlendes mesh-vpn | |
+| `lowmem/limit-wireless-buffers.sh` | post-update | WLAN-Puffer nach RAM begrenzen | Backport Gluon 8f38662f, entfällt mit 2025.1 |
+| `lowmem/sysctl-no-watermark-boost-64mb.sh` | post-update | kein Watermark-Boost auf 64-MB-Geräten | |
+| `bugfixes/sysctl-firmware-no-sysfs-fallback.sh` | post-update | kein sysfs-Fallback für fehlende Firmware (sonst 60 s Boot-Stillstand) | |
+| `lowmem/sysctl-64m-min-free.sh` | post-update | kleinere Fragmentpuffer auf 64-MB-Geräten, **ohne** `vm.min_free_kbytes=2048` (bricht ath10k unter WLAN-Last) | Teil-Backport Gluon a505f767 + c6ac8914 |
+| `gluon-config-mode/wizard-save-only.sh` | post-update | Wizard mit „Speichern“ ohne Neustart, Warnung beim Verlassen | |
+| `gluon-config-mode/wizard-save-lock.sh` | post-update | nur ein „Speichern & Neustarten“ gleichzeitig | |
+| `gluon-config-mode/outdoor-schalter.sh` | post-update | Outdoor-Schalter unabhängig von `preserve_channels` | |
+| `lowmem/state-check-shell.sh` | post-update | gluon-state-check als Shell statt Lua | |
+| `lowmem/tunneldigger-watchdog-shell.sh` | post-update | tunneldigger-watchdog als Shell statt Lua | |
+
+## Abhängigkeiten
+
+* `gluon-config-mode/wizard-save-lock.sh` setzt `wizard-save-only.sh` voraus.
+* pre-update-Skripte wirken nur, wenn danach `make update` läuft.
+* `package-fixes/add-ffac-package-patches.sh` braucht den Feed
+  [ffac/gluon-packages](https://github.com/ffac/gluon-packages) als Site-Feed
+  `ffac`.
+* Die übrigen Skripte sind voneinander unabhängig.
+
+## Herkunft und Lizenz
+
+Herausgelöst aus Neanderfunk/FirmwareConfigs (bis September 2026
+Neanderfunk/firmware), Stand `851194f217a7fb165d101ed9c7b12a2597a9029e`,
+Verzeichnis `patches/`. Die Geschichte der einzelnen Dateien steht dort.
+`package-fixes/add-gluon-airtime-plausible.sh` ist der Airtime-Teil des dortigen
+`build/add-gluon-package-patches.sh`.
+
+`lib-patch.sh` ist eine Kopie; jedes Patch-Repo trägt seine eigene, damit es
+allein nutzbar bleibt.
+
+Skripte (`apply.sh`, `lib-patch.sh`, `*/*.sh`): BSD-3-Clause, siehe
+`LICENSE`. Patchdateien stehen unter der Lizenz des Projekts, das sie
+ändern: Gluon BSD-2-Clause, OpenWrt, die Paketfeeds und Linux in der Regel
+GPL-2.0.
