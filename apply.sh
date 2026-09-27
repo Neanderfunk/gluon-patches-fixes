@@ -25,7 +25,6 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 PRE_UPDATE=(
   package-fixes/add-gluon-airtime-plausible.sh  # respondd-module-airtime: unplausible Werte weglassen
-  package-fixes/add-ffac-package-patches.sh     # ffac-mt7915-maxinactivity je Radio
   bugfixes/tunneldigger-reinit-backoff.sh       # tunneldigger: Reinit mit Pause, kein modprobe
 )
 

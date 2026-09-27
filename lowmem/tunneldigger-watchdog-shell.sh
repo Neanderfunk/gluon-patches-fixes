@@ -9,14 +9,20 @@
 
 echo "tunneldigger-watchdog: Shell statt Lua"
 
-# Ohne Merkmal, aus demselben Grund wie in state-check-shell.sh: nach
-# "git reset --hard" darf keine Lua-Fassung ueber der Shell-Fassung landen.
+# Seit Gluon 2025.1 kommt tunneldigger als ff-mesh-vpn-tunneldigger aus den
+# community-packages (Gluon #3109); der Watchdog dort ist byte-gleich mit dem
+# frueheren aus Gluon. Das Paket liegt nach "make update" unter
+# packages/<feedname>/, der Feedname kommt aus der site. Die Pfade im Patch
+# sind deshalb relativ zum Paketverzeichnis.
+PKG_DIRS=( packages/*/ff-mesh-vpn-tunneldigger )
+[ -d "${PKG_DIRS[0]}" ] \
+  || patch_abort "ff-mesh-vpn-tunneldigger nicht unter packages/*/ gefunden - ist der community-Feed in der site eingetragen?"
+(( ${#PKG_DIRS[@]} == 1 )) \
+  || patch_abort "ff-mesh-vpn-tunneldigger liegt mehrfach vor: ${PKG_DIRS[*]}"
+enter_dir "${PKG_DIRS[0]}"
+
 apply_patch "$PATCH_DIR/tunneldigger-watchdog-shell.patch" \
-  "package/gluon-mesh-vpn-tunneldigger/files/usr/bin/tunneldigger-watchdog"
-
-[ ! -e "package/gluon-mesh-vpn-tunneldigger/luasrc/usr/bin/tunneldigger-watchdog" ] \
+  "files/usr/bin/tunneldigger-watchdog"
+[ ! -e "luasrc/usr/bin/tunneldigger-watchdog" ] \
   || patch_abort "Die Lua-Fassung von tunneldigger-watchdog ist noch da."
-
-# patch legt neue Dateien ohne Ausfuehrungsrecht an; micrond startet das
-# Skript direkt.
-chmod 755 "package/gluon-mesh-vpn-tunneldigger/files/usr/bin/tunneldigger-watchdog"
+chmod 755 "files/usr/bin/tunneldigger-watchdog"

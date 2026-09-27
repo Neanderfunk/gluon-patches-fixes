@@ -1,6 +1,6 @@
 # Gluon-Patches: Fehlerbehebungen
 
-*Patches for Gluon v2023.2.x / OpenWrt 23.05 that fix system behaviour
+*Patches for Gluon v2025.1.x / OpenWrt 24.10 that fix system behaviour
 independent of the device: relief for 64 MB devices, boot stalls, tunneldigger
 retries, config-mode wizard, and two package patches. Used by Freifunk im
 Neanderland (Neanderfunk). Each script can be used on its own; `apply.sh`
@@ -9,7 +9,8 @@ applies all of them in order.*
 Korrekturen am Systemverhalten, unabhängig vom Gerät. Nichts davon hängt an
 den Paketen oder der Site-Konfiguration von Neanderfunk.
 
-Die Zweige folgen Gluon: `v2023.2.x` passt zu Gluon v2023.2.x (OpenWrt 23.05,
+Die Zweige folgen Gluon: dieser Zweig `v2025.1.x` passt zu Gluon v2025.1.x
+(OpenWrt 24.10, Kernel 6.6); `v2023.2.x` zu Gluon v2023.2.x (OpenWrt 23.05,
 Kernel 5.15).
 
 ## Anwenden
@@ -38,26 +39,32 @@ machen weiter. Scheitert einer, brechen sie mit Fehler ab.
 | Skript | Phase | Zweck | Herkunft, Ende |
 | --- | --- | --- | --- |
 | `package-fixes/add-gluon-airtime-plausible.sh` | pre-update | respondd-module-airtime: busy/rx/tx größer als active weglassen (mt76 meldet untergelaufene Survey-Zähler, Karten zeigen sonst Kanalauslastung weit über 100 %) | |
-| `package-fixes/add-ffac-package-patches.sh` | pre-update | ffac-mt7915-maxinactivity je Radio statt je Build-Target | |
-| `bugfixes/tunneldigger-reinit-backoff.sh` | pre-update | tunneldigger: Reinit mit Pause, kein modprobe für ein fehlendes mesh-vpn | |
-| `lowmem/limit-wireless-buffers.sh` | post-update | WLAN-Puffer nach RAM begrenzen | Backport Gluon 8f38662f, entfällt mit 2025.1 |
+| `bugfixes/tunneldigger-reinit-backoff.sh` | pre-update | tunneldigger: Reinit mit Pause, kein modprobe für ein fehlendes mesh-vpn (Client aus dem packages-Feed, unverändert 2021-03-08) | |
+| `lowmem/limit-wireless-buffers.sh` | post-update | WLAN-Puffer auch oberhalb 128 MB auf 2 MB deckeln (8f38662f ist in 2025.1 enthalten, übrig bleibt unsere Abweichung) | |
 | `lowmem/sysctl-no-watermark-boost-64mb.sh` | post-update | kein Watermark-Boost auf 64-MB-Geräten | |
 | `bugfixes/sysctl-firmware-no-sysfs-fallback.sh` | post-update | kein sysfs-Fallback für fehlende Firmware (sonst 60 s Boot-Stillstand) | |
-| `lowmem/sysctl-64m-min-free.sh` | post-update | kleinere Fragmentpuffer auf 64-MB-Geräten, **ohne** `vm.min_free_kbytes=2048` (bricht ath10k unter WLAN-Last) | Teil-Backport Gluon a505f767 + c6ac8914 |
+| `lowmem/sysctl-64m-min-free.sh` | post-update | Gluons 64-MB-sysctl wirksam machen (Fix c6ac8914 fehlt in 2025.1) und dabei **ohne** `vm.min_free_kbytes=2048` (bricht ath10k unter WLAN-Last) | Fix aus Gluon c6ac8914 |
 | `gluon-config-mode/wizard-save-only.sh` | post-update | Wizard mit „Speichern“ ohne Neustart, Warnung beim Verlassen | |
 | `gluon-config-mode/wizard-save-lock.sh` | post-update | nur ein „Speichern & Neustarten“ gleichzeitig | |
 | `gluon-config-mode/outdoor-schalter.sh` | post-update | Outdoor-Schalter unabhängig von `preserve_channels` | |
 | `lowmem/state-check-shell.sh` | post-update | gluon-state-check als Shell statt Lua | |
-| `lowmem/tunneldigger-watchdog-shell.sh` | post-update | tunneldigger-watchdog als Shell statt Lua | |
+| `lowmem/tunneldigger-watchdog-shell.sh` | post-update | tunneldigger-watchdog als Shell statt Lua; seit 2025.1 im Paket `ff-mesh-vpn-tunneldigger` der community-packages | |
 
 ## Abhängigkeiten
 
 * `gluon-config-mode/wizard-save-lock.sh` setzt `wizard-save-only.sh` voraus.
 * pre-update-Skripte wirken nur, wenn danach `make update` läuft.
-* `package-fixes/add-ffac-package-patches.sh` braucht den Feed
-  [ffac/gluon-packages](https://github.com/ffac/gluon-packages) als Site-Feed
-  `ffac`.
+* `lowmem/tunneldigger-watchdog-shell.sh` braucht die
+  [community-packages](https://github.com/freifunk-gluon/community-packages)
+  als Site-Feed (Paket `ff-mesh-vpn-tunneldigger`), unter beliebigem Namen.
 * Die übrigen Skripte sind voneinander unabhängig.
+
+## Entfernt
+
+Gegenüber `v2023.2.x` (27.09.2026): `package-fixes/add-ffac-package-patches.sh`
+mit `ffac-packages.patch`. Das Paket `ffac-mt7915-maxinactivity` gibt es unter
+2025.1 nicht mehr (die ffac-Pakete sind in die community-packages gewandert,
+dort liegt nur `ffac-mt7915-hotfix`).
 
 ## Herkunft und Lizenz
 

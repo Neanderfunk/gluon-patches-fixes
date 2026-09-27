@@ -34,8 +34,9 @@ TARGET="$MODULE_DIR/0100-tunneldigger-reinit-backoff-no-modprobe.patch"
 echo "tunneldigger: Reinit mit Pause, kein modprobe fuer mesh-vpn (Modulpatch)"
 
 [ -f "$PATCH_DIR/$SRC_PATCH" ] || patch_abort "$SRC_PATCH fehlt in patches/."
-[ -d "$MODULE_DIR" ] \
-  || patch_abort "$MODULE_DIR gibt es nicht - legt Gluon seine Modulpatches noch dort ab?"
+# Gluon 2025.1 patcht den packages-Feed selbst nicht mehr, das Verzeichnis fehlt
+# dort. scripts/patch.sh nimmt es trotzdem auf, sobald es existiert.
+mkdir -p "$MODULE_DIR" || patch_abort "$MODULE_DIR liess sich nicht anlegen."
 
 # Das Datum steht fest, damit der erzeugte Patch von Lauf zu Lauf gleich
 # bleibt (Vergleich unten, golden-Fingerabdruck).

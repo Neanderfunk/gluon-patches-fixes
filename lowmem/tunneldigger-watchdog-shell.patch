@@ -28,11 +28,11 @@ Gemessen am WDR3600 (26091206bro), Cache per drop_caches geleert: nur die
 Huelle (Konfiguration lesen) kalt 0,8-0,95 s in Lua, 0,3-0,4 s in Shell.
 Entscheidung beider Fassungen dort gleich (mesh_vpn an, kein Nachbar).
 
-diff --git a/package/gluon-mesh-vpn-tunneldigger/files/usr/bin/tunneldigger-watchdog b/package/gluon-mesh-vpn-tunneldigger/files/usr/bin/tunneldigger-watchdog
+diff --git a/files/usr/bin/tunneldigger-watchdog b/files/usr/bin/tunneldigger-watchdog
 new file mode 100755
 index 0000000..7910ecb
 --- /dev/null
-+++ b/package/gluon-mesh-vpn-tunneldigger/files/usr/bin/tunneldigger-watchdog
++++ b/files/usr/bin/tunneldigger-watchdog
 @@ -0,0 +1,17 @@
 +#!/bin/sh
 +# Restarts tunneldigger when the mesh VPN is enabled, but batman-adv has no
@@ -51,10 +51,10 @@ index 0000000..7910ecb
 +	logger -t tunneldigger-watchdog "Restarting Tunneldigger."
 +	/etc/init.d/tunneldigger restart
 +fi
-diff --git a/package/gluon-mesh-vpn-tunneldigger/luasrc/usr/bin/tunneldigger-watchdog b/package/gluon-mesh-vpn-tunneldigger/luasrc/usr/bin/tunneldigger-watchdog
+diff --git a/luasrc/usr/bin/tunneldigger-watchdog b/luasrc/usr/bin/tunneldigger-watchdog
 deleted file mode 100755
 index 0f1e560..0000000
---- a/package/gluon-mesh-vpn-tunneldigger/luasrc/usr/bin/tunneldigger-watchdog
+--- a/luasrc/usr/bin/tunneldigger-watchdog
 +++ /dev/null
 @@ -1,31 +0,0 @@
 -#!/usr/bin/lua
