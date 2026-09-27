@@ -26,6 +26,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PRE_UPDATE=(
   package-fixes/add-gluon-airtime-plausible.sh  # respondd-module-airtime: unplausible Werte weglassen
   bugfixes/tunneldigger-reinit-backoff.sh       # tunneldigger: Reinit mit Pause, kein modprobe
+  build/disable-manifest.sh                     # image-customization: disable_manifest() (vor make clean noetig)
 )
 
 # Reihenfolge wie im Neanderfunk-Bau. Abhaengig ist nur wizard-save-lock von
@@ -40,7 +41,6 @@ POST_UPDATE=(
   gluon-config-mode/outdoor-schalter.sh         # Outdoor-Schalter unabhaengig von preserve_channels
   lowmem/state-check-shell.sh                   # gluon-state-check als Shell statt Lua
   lowmem/tunneldigger-watchdog-shell.sh         # tunneldigger-watchdog als Shell statt Lua
-  build/disable-manifest.sh                     # image-customization: disable_manifest()
 )
 
 PHASE="${1:-}"

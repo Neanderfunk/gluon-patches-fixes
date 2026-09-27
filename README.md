@@ -26,8 +26,11 @@ make update
 ```
 
 `pre-update` legt Dateien unter `patches/packages` im Gluon-Baum ab, die
-`make update` per `git am` auf die Paket-Module einspielt. Alles andere läuft
-danach, weil `make update` die Module neu aufsetzt.
+`make update` per `git am` auf die Paket-Module einspielt, und ändert Gluons
+eigene Skripte, die schon vor den post-update-Patches gebraucht werden
+(`build/disable-manifest.sh`: ein `make clean` wertet `image-customization.lua`
+bereits aus). Alles andere läuft danach, weil `make update` die Module neu
+aufsetzt.
 
 Einzeln: das Skript samt seiner Patchdateien und `lib-patch.sh` kopieren,
 Struktur `<gruppe>/…` und `lib-patch.sh` eine Ebene darüber beibehalten, und
@@ -50,7 +53,7 @@ machen weiter. Scheitert einer, brechen sie mit Fehler ab.
 | `gluon-config-mode/outdoor-schalter.sh` | post-update | Outdoor-Schalter unabhängig von `preserve_channels` | |
 | `lowmem/state-check-shell.sh` | post-update | gluon-state-check als Shell statt Lua | |
 | `lowmem/tunneldigger-watchdog-shell.sh` | post-update | tunneldigger-watchdog als Shell statt Lua; seit 2025.1 im Paket `ff-mesh-vpn-tunneldigger` der community-packages | |
-| `build/disable-manifest.sh` | post-update | `disable_manifest()` in image-customization.lua: Images bauen, aber nicht ins Autoupdater-Manifest (EdgeRouter X bis zur Migration: sonst laedt ein ERX auf 2023.2 stuendlich ein Image mit fremdem Compat-Level) | |
+| `build/disable-manifest.sh` | pre-update | `disable_manifest()` in image-customization.lua: Images bauen, aber nicht ins Autoupdater-Manifest (EdgeRouter X bis zur Migration: sonst laedt ein ERX auf 2023.2 stuendlich ein Image mit fremdem Compat-Level) | |
 
 ## Abhängigkeiten
 
