@@ -44,6 +44,7 @@ machen weiter. Scheitert einer, brechen sie mit Fehler ab.
 | --- | --- | --- | --- |
 | `package-fixes/add-gluon-airtime-plausible.sh` | pre-update | respondd-module-airtime: busy/rx/tx größer als active weglassen (mt76 meldet untergelaufene Survey-Zähler, Karten zeigen sonst Kanalauslastung weit über 100 %) | |
 | `bugfixes/tunneldigger-reinit-backoff.sh` | pre-update | tunneldigger: Reinit mit Pause, kein modprobe für ein fehlendes mesh-vpn (Client aus dem packages-Feed, unverändert 2021-03-08) | |
+| `bugfixes/perl-no-parallel.sh` | pre-update | perl im packages-Feed seriell bauen: parallel scheitert es sporadisch an einer Race Condition (openwrt/packages#8238), kommt über `ALL_NONSHARED` in jeden Bau | Patch aus Gluon v2023.2.x (Martin Weinelt), für 24.10 neu erzeugt; entfällt, wenn upstream seriell baut |
 | `lowmem/limit-wireless-buffers.sh` | post-update | WLAN-Puffer auch oberhalb 128 MB auf 2 MB deckeln (8f38662f ist in 2025.1 enthalten, übrig bleibt unsere Abweichung) | |
 | `lowmem/sysctl-no-watermark-boost-64mb.sh` | post-update | kein Watermark-Boost auf 64-MB-Geräten | |
 | `bugfixes/sysctl-firmware-no-sysfs-fallback.sh` | post-update | kein sysfs-Fallback für fehlende Firmware (sonst 60 s Boot-Stillstand) | |

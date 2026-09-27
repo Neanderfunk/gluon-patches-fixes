@@ -1,0 +1,30 @@
+From: Martin Weinelt <martin@darmstadt.freifunk.net>
+Date: Tue, 8 Feb 2022 21:09:20 +0100
+Subject: perl: don't build in parallel
+
+Parallel builds cause spurious build failures with high core counts.
+
+https://github.com/openwrt/packages/issues/8238
+https://github.com/openwrt/packages/pull/17274
+
+[Neanderfunk: aus Gluon v2023.2.x uebernommen
+ (patches/packages/packages/0001-perl-don-t-build-in-parallel-and-bump-release.patch),
+ fuer openwrt-24.10 neu erzeugt. Gluon 2025.1 patcht den packages-Feed nicht
+ mehr, upstream baut perl weiter parallel (nur 68c0a57 "make depend").
+ Beobachtet 27.09.2026 auf horst, x86-64: ExtUtils/Liblist/Kid.pm des
+ Host-perl halb geschrieben, Paket perl scheitert.]
+
+diff --git a/lang/perl/Makefile b/lang/perl/Makefile
+--- a/lang/perl/Makefile
++++ b/lang/perl/Makefile
+@@ -27,8 +27,8 @@
+ HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/perl/$(PKG_NAME)-$(PKG_VERSION)
+ PKG_INSTALL:=1
+ PKG_BUILD_DEPENDS:=perl/host
+-PKG_BUILD_PARALLEL:=1
+-HOST_BUILD_PARALLEL:=1
++PKG_BUILD_PARALLEL:=0
++HOST_BUILD_PARALLEL:=0
+ 
+ # Variables used during configuration/build
+ HOST_PERL_PREFIX:=$(STAGING_DIR_HOSTPKG)/usr

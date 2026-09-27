@@ -26,6 +26,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PRE_UPDATE=(
   package-fixes/add-gluon-airtime-plausible.sh  # respondd-module-airtime: unplausible Werte weglassen
   bugfixes/tunneldigger-reinit-backoff.sh       # tunneldigger: Reinit mit Pause, kein modprobe
+  bugfixes/perl-no-parallel.sh                  # perl seriell bauen (Race Condition bei -j)
   build/disable-manifest.sh                     # image-customization: disable_manifest() (vor make clean noetig)
 )
 
