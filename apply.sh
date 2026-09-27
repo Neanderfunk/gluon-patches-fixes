@@ -40,6 +40,7 @@ POST_UPDATE=(
   gluon-config-mode/outdoor-schalter.sh         # Outdoor-Schalter unabhaengig von preserve_channels
   lowmem/state-check-shell.sh                   # gluon-state-check als Shell statt Lua
   lowmem/tunneldigger-watchdog-shell.sh         # tunneldigger-watchdog als Shell statt Lua
+  build/disable-manifest.sh                     # image-customization: disable_manifest()
 )
 
 PHASE="${1:-}"

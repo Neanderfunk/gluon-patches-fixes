@@ -2,7 +2,8 @@
 
 *Patches for Gluon v2025.1.x / OpenWrt 24.10 that fix system behaviour
 independent of the device: relief for 64 MB devices, boot stalls, tunneldigger
-retries, config-mode wizard, and two package patches. Used by Freifunk im
+retries, config-mode wizard, two package patches, and disable_manifest() for
+image-customization.lua. Used by Freifunk im
 Neanderland (Neanderfunk). Each script can be used on its own; `apply.sh`
 applies all of them in order.*
 
@@ -49,6 +50,7 @@ machen weiter. Scheitert einer, brechen sie mit Fehler ab.
 | `gluon-config-mode/outdoor-schalter.sh` | post-update | Outdoor-Schalter unabhängig von `preserve_channels` | |
 | `lowmem/state-check-shell.sh` | post-update | gluon-state-check als Shell statt Lua | |
 | `lowmem/tunneldigger-watchdog-shell.sh` | post-update | tunneldigger-watchdog als Shell statt Lua; seit 2025.1 im Paket `ff-mesh-vpn-tunneldigger` der community-packages | |
+| `build/disable-manifest.sh` | post-update | `disable_manifest()` in image-customization.lua: Images bauen, aber nicht ins Autoupdater-Manifest (EdgeRouter X bis zur Migration: sonst laedt ein ERX auf 2023.2 stuendlich ein Image mit fremdem Compat-Level) | |
 
 ## Abhängigkeiten
 
