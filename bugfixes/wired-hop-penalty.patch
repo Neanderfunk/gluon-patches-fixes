@@ -1,0 +1,32 @@
+gluon-core: gluon_wired: hop_penalty als Option anmelden
+
+Gluon 0c30629 ("allow setting hop_penalty in network") laesst gluon_wired
+den Wert hop_penalty lesen und an die Unter-Schnittstelle <name>_mesh
+(proto gluon_mesh) weiterreichen. In proto_gluon_wired_init_config fehlt
+aber proto_config_add_int hop_penalty. netifd uebergibt einem
+Protokoll-Handler nur angemeldete Optionen, der Wert kommt also nie an;
+gluon_bat0.sh setzt dann ${hop_penalty:-0}.
+
+Folge: gluon.iface_*.batadv_hop_penalty landet in
+network.mesh_uplink/mesh_other.hop_penalty, batctl hardif <kabel>
+hop_penalty bleibt aber 0. WLAN (mesh_radioN) und VPN (mesh_vpn) sind
+nicht betroffen, sie laufen direkt ueber gluon_mesh, das die Option
+anmeldet.
+
+Nachweis 29.09.2026 am TL-WR1043ND v2 (26092718bro):
+  ubus call network get_proto_handlers
+  gluon_wired: { "func", "vxlan", "vxpeer6addr" }       <- kein hop_penalty
+  gluon_mesh:  { "fixed_mtu", "hop_penalty" }
+Stand Gluon main und v2025.1.x: unveraendert.
+
+diff --git a/package/gluon-core/files/lib/netifd/proto/gluon_wired.sh b/package/gluon-core/files/lib/netifd/proto/gluon_wired.sh
+--- a/package/gluon-core/files/lib/netifd/proto/gluon_wired.sh
++++ b/package/gluon-core/files/lib/netifd/proto/gluon_wired.sh
+@@ -10,6 +10,7 @@
+ 	proto_config_add_string func
+ 	proto_config_add_boolean vxlan
+ 	proto_config_add_string vxpeer6addr
++	proto_config_add_int hop_penalty
+ }
+ 
+ xor2() {

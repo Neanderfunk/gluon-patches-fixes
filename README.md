@@ -54,6 +54,7 @@ machen weiter. Scheitert einer, brechen sie mit Fehler ab.
 | `gluon-config-mode/outdoor-schalter.sh` | post-update | Outdoor-Schalter unabhängig von `preserve_channels` | |
 | `lowmem/state-check-shell.sh` | post-update | gluon-state-check als Shell statt Lua | |
 | `lowmem/tunneldigger-watchdog-shell.sh` | post-update | tunneldigger-watchdog als Shell statt Lua; seit 2025.1 im Paket `ff-mesh-vpn-tunneldigger` der community-packages | |
+| `bugfixes/wired-hop-penalty.sh` | post-update | Kabel-Mesh: `gluon_wired` meldet `hop_penalty` nicht als Option an, die Hop-Penalty am Kabel bleibt sonst immer 0 (WLAN und VPN nicht betroffen) | Fehler aus Gluon 0c30629; entfällt, wenn Gluon die Option anmeldet |
 | `build/disable-manifest.sh` | pre-update | `disable_manifest()` in image-customization.lua: Images bauen, aber nicht ins Autoupdater-Manifest (EdgeRouter X bis zur Migration: sonst laedt ein ERX auf 2023.2 stuendlich ein Image mit fremdem Compat-Level) | |
 
 ## Abhängigkeiten
