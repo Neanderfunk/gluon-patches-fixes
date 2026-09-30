@@ -56,6 +56,7 @@ machen weiter. Scheitert einer, brechen sie mit Fehler ab.
 | `lowmem/tunneldigger-watchdog-shell.sh` | post-update | tunneldigger-watchdog als Shell statt Lua; seit 2025.1 im Paket `ff-mesh-vpn-tunneldigger` der community-packages | |
 | `bugfixes/wired-hop-penalty.sh` | post-update | Kabel-Mesh: `gluon_wired` meldet `hop_penalty` nicht als Option an, die Hop-Penalty am Kabel bleibt sonst immer 0 (WLAN und VPN nicht betroffen) | Fehler aus Gluon 0c30629; entfällt, wenn Gluon die Option anmeldet |
 | `build/disable-manifest.sh` | pre-update | `disable_manifest()` in image-customization.lua: Images bauen, aber nicht ins Autoupdater-Manifest (EdgeRouter X bis zur Migration: sonst laedt ein ERX auf 2023.2 stuendlich ein Image mit fremdem Compat-Level) | |
+| `bugfixes/dnsmasq-no-dnssec.sh` | pre-update | dnsmasq-full ohne DNSSEC: spart `libnettle8` und `libgmp10`, rund 460 KB squashfs und damit ebenso viel Overlay auf 8-MB-NOR-Geräten | Gluon schaltet die übrigen dnsmasq-full-Optionen schon ab, DNSSEC nicht |
 
 ## Abhängigkeiten
 

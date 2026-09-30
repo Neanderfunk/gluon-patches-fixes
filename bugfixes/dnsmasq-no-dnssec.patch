@@ -1,0 +1,25 @@
+targets/generic: dnsmasq-full ohne DNSSEC bauen
+
+gluon-wan-dnsmasq und gluon-setup-mode verlangen dnsmasq-full. OpenWrt baut
+es standardmaessig mit DNSSEC, das zieht libnettle8 und libgmp10 nach
+(zusammen rund 460 KB im squashfs, gemessen am UniFi-AP-Image 26093011bro,
+xz je Paket: libnettle8 294 KB, libgmp10 165 KB). Gluon schaltet die
+uebrigen dnsmasq-full-Optionen schon ab (dhcpv6, auth, ipset, nftset,
+conntrack, noid, rtc), DNSSEC nicht; weder Gluon noch die Neanderfunk-Site
+nutzen es.
+
+Wirkung: jedes squashfs-Image wird entsprechend kleiner, das jffs2-Overlay
+entsprechend groesser. Auf 8-MB-Geraeten entscheidend: Archer C6 v2 hatte
+256 KB Overlay, UniFi AP 192 KB, bei 192 KB jffs2-Schreibreserve.
+
+diff --git a/targets/generic b/targets/generic
+--- a/targets/generic
++++ b/targets/generic
+@@ -55,6 +55,7 @@
+ try_config('PACKAGE_dnsmasq_full_noid', false)
+ try_config('PACKAGE_dnsmasq_full_broken_rtc', false)
+ try_config('PACKAGE_dnsmasq_full_rtc', false)
++try_config('PACKAGE_dnsmasq_full_dnssec', false)
+ 
+ try_config('TARGET_SQUASHFS_BLOCK_SIZE', 256)
+ 

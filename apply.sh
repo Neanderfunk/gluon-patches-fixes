@@ -28,6 +28,7 @@ PRE_UPDATE=(
   bugfixes/tunneldigger-reinit-backoff.sh       # tunneldigger: Reinit mit Pause, kein modprobe
   bugfixes/perl-no-parallel.sh                  # perl seriell bauen (Race Condition bei -j)
   build/disable-manifest.sh                     # image-customization: disable_manifest() (vor make clean noetig)
+  bugfixes/dnsmasq-no-dnssec.sh                 # dnsmasq-full ohne DNSSEC (~460 KB weniger)
 )
 
 # Reihenfolge wie im Neanderfunk-Bau. Abhaengig ist nur wizard-save-lock von
