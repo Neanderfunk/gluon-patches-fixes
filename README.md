@@ -47,6 +47,7 @@ machen weiter. Scheitert einer, brechen sie mit Fehler ab.
 | `bugfixes/perl-no-parallel.sh` | pre-update | perl im packages-Feed seriell bauen: parallel scheitert es sporadisch an einer Race Condition (openwrt/packages#8238), kommt über `ALL_NONSHARED` in jeden Bau | Patch aus Gluon v2023.2.x (Martin Weinelt), für 24.10 neu erzeugt; entfällt, wenn upstream seriell baut |
 | `lowmem/limit-wireless-buffers.sh` | post-update | WLAN-Puffer auch oberhalb 128 MB auf 2 MB deckeln (8f38662f ist in 2025.1 enthalten, übrig bleibt unsere Abweichung) | |
 | `lowmem/sysctl-no-watermark-boost-64mb.sh` | post-update | kein Watermark-Boost auf 64-MB-Geräten | |
+| `lowmem/kernel-swap.sh` | post-update | `KERNEL_SWAP` auf ath79-generic, ramips-mt76x8, ramips-mt7620 wieder an (Gluon 2025.1 schaltet ihn in `targets/generic` ab, zram-swap lief ins Leere) | |
 | `bugfixes/sysctl-firmware-no-sysfs-fallback.sh` | post-update | kein sysfs-Fallback für fehlende Firmware (sonst 60 s Boot-Stillstand) | |
 | `lowmem/sysctl-64m-min-free.sh` | post-update | Gluons 64-MB-sysctl wirksam machen (Fix c6ac8914 fehlt in 2025.1) und dabei **ohne** `vm.min_free_kbytes=2048` (bricht ath10k unter WLAN-Last) | Fix aus Gluon c6ac8914 |
 | `gluon-config-mode/wizard-save-only.sh` | post-update | Wizard mit „Speichern“ ohne Neustart, Warnung beim Verlassen | |

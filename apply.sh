@@ -38,6 +38,7 @@ POST_UPDATE=(
   lowmem/sysctl-no-watermark-boost-64mb.sh      # kein Watermark-Boost auf 64-MB-Geraeten
   bugfixes/sysctl-firmware-no-sysfs-fallback.sh # kein 60-s-Boot-Stillstand bei fehlender Firmware
   lowmem/sysctl-64m-min-free.sh                 # kleinere Fragmentpuffer auf 64-MB-Geraeten
+  lowmem/kernel-swap.sh                         # KERNEL_SWAP fuer zram auf Targets mit 64-MB-Geraeten
   gluon-config-mode/wizard-save-only.sh         # Wizard: Speichern ohne Neustart
   gluon-config-mode/wizard-save-lock.sh         # Wizard: nur ein Speichern gleichzeitig (nach save-only)
   gluon-config-mode/outdoor-schalter.sh         # Outdoor-Schalter unabhaengig von preserve_channels
