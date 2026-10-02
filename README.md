@@ -55,7 +55,7 @@ machen weiter. Scheitert einer, brechen sie mit Fehler ab.
 | `gluon-config-mode/outdoor-schalter.sh` | post-update | Outdoor-Schalter unabhängig von `preserve_channels` | |
 | `lowmem/state-check-shell.sh` | post-update | gluon-state-check als Shell statt Lua | |
 | `lowmem/tunneldigger-watchdog-shell.sh` | post-update | tunneldigger-watchdog als Shell statt Lua; seit 2025.1 im Paket `ff-mesh-vpn-tunneldigger` der community-packages | |
-| `bugfixes/wired-hop-penalty.sh` | post-update | Kabel-Mesh: `gluon_wired` meldet `hop_penalty` nicht als Option an, die Hop-Penalty am Kabel bleibt sonst immer 0 (WLAN und VPN nicht betroffen) | Fehler aus Gluon 0c30629; entfällt, wenn Gluon die Option anmeldet |
+| `bugfixes/wired-hop-penalty.sh` | post-update | Kabel-Mesh: `gluon_wired` meldet `hop_penalty` nicht als Option an, die Hop-Penalty am Kabel bleibt sonst immer 0 (WLAN und VPN nicht betroffen) | Fehler aus Gluon 0c30629 (PR #3454, Merge 9143b02): der PR meldet die Option nur in `gluon_mesh` an; kein Backport, sondern die fehlende Zeile. Upstream noch offen (main/v2025.1.x/next, Stand 02.10.2026); entfällt, wenn Gluon die Option anmeldet |
 | `build/disable-manifest.sh` | pre-update | `disable_manifest()` in image-customization.lua: Images bauen, aber nicht ins Autoupdater-Manifest (EdgeRouter X bis zur Migration: sonst laedt ein ERX auf 2023.2 stuendlich ein Image mit fremdem Compat-Level) | |
 | `bugfixes/dnsmasq-no-dnssec.sh` | pre-update | dnsmasq-full ohne DNSSEC: spart `libnettle8` und `libgmp10`, rund 460 KB squashfs und damit ebenso viel Overlay auf 8-MB-NOR-Geräten | Gluon schaltet die übrigen dnsmasq-full-Optionen schon ab, DNSSEC nicht |
 

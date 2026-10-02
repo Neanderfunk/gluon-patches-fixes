@@ -19,6 +19,17 @@ Nachweis 29.09.2026 am TL-WR1043ND v2 (26092718bro):
   gluon_mesh:  { "fixed_mtu", "hop_penalty" }
 Stand Gluon main und v2025.1.x: unveraendert.
 
+Herkunft und Abgrenzung (nachgeprueft 02.10.2026): 0c30629 gehoert zu
+PR #3454 "gluon-core: add hop penalty per hardif setting", gemergt als
+9143b02 (31.07.2025, in v2025.1.x und damit in unserem Pin 0ad3ad5). Der PR
+meldet hop_penalty in gluon_mesh.sh an, in gluon_wired.sh liest er es nur
+(json_get_vars) und reicht es weiter - die Anmeldung in
+proto_gluon_wired_init_config fehlt. Dieser Patch ist also KEIN Backport von
+9143b02, sondern ergaenzt die eine fehlende Zeile; er bleibt noetig, solange
+Gluon sie nicht selbst traegt. Geprueft auf main 5648b219 (01.10.2026),
+v2025.1.x 0ad3ad5 und next 48645994 (30.09.2026): ueberall ohne die Zeile.
+Kommt sie upstream, greift der Patch nicht mehr (fuzz 0) und muss raus.
+
 diff --git a/package/gluon-core/files/lib/netifd/proto/gluon_wired.sh b/package/gluon-core/files/lib/netifd/proto/gluon_wired.sh
 --- a/package/gluon-core/files/lib/netifd/proto/gluon_wired.sh
 +++ b/package/gluon-core/files/lib/netifd/proto/gluon_wired.sh
