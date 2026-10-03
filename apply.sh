@@ -31,8 +31,8 @@ PRE_UPDATE=(
   bugfixes/dnsmasq-no-dnssec.sh                 # dnsmasq-full ohne DNSSEC (~460 KB weniger)
 )
 
-# Reihenfolge wie im Neanderfunk-Bau. Abhaengig ist nur wizard-save-lock von
-# wizard-save-only.
+# Reihenfolge wie im Neanderfunk-Bau. Abhaengig sind wizard-save-lock von
+# wizard-save-only und wifi-txpower-save von outdoor-schalter.
 POST_UPDATE=(
   lowmem/limit-wireless-buffers.sh              # WLAN-Puffer nach RAM (Backport Gluon 8f38662f)
   lowmem/sysctl-no-watermark-boost-64mb.sh      # kein Watermark-Boost auf 64-MB-Geraeten
@@ -42,6 +42,7 @@ POST_UPDATE=(
   gluon-config-mode/wizard-save-only.sh         # Wizard: Speichern ohne Neustart
   gluon-config-mode/wizard-save-lock.sh         # Wizard: nur ein Speichern gleichzeitig (nach save-only)
   gluon-config-mode/outdoor-schalter.sh         # Outdoor-Schalter unabhaengig von preserve_channels
+  gluon-config-mode/wifi-txpower-save.sh        # Sendeleistung aus den Erweiterten Einstellungen speichern (nach outdoor-schalter)
   lowmem/state-check-shell.sh                   # gluon-state-check als Shell statt Lua
   lowmem/tunneldigger-watchdog-shell.sh         # tunneldigger-watchdog als Shell statt Lua
   bugfixes/wired-hop-penalty.sh                 # Kabel-Mesh: hop_penalty kommt bei batman-adv an

@@ -1,0 +1,46 @@
+gluon-web-wifi-config: Sendeleistung aus den Erweiterten Einstellungen speichern
+
+Die Seite "WLAN" der Erweiterten Einstellungen setzt die Sendeleistung mit
+uci:set('wireless', <radio>, 'txpower', ...), committet in f:write() aber nur
+noch gluon und startet gluon-reconfigure. Bis v2023.2 stand dort auch
+uci:commit('wireless'); mit den WLAN-Rollen in der gluon-Konfiguration (2025.1)
+fiel es weg, die Sendeleistung blieb als einzige Option dieser Seite in
+wireless. Die Aenderung lebte nur im Speicher des CGI-Prozesses und verfiel;
+gluon-reconfigure liest die Platte. Ergebnis: Die gewaehlte Sendeleistung kam
+nie in /etc/config/wireless an. Upstream main und v2025.1.x sehen am 03.10.2026
+noch genauso aus.
+
+Nachgestellt am 03.10.2026 auf dem WDR3600 (26100213bro) mit dem echten
+Formular-Code (CGI /cgi-bin/config/admin/wifi-config per POST, radio0 auf
+12 dBm): ohne den Patch kein txpower in wireless, das Radio blieb bei 21 dBm.
+Mit dem Patch: option txpower '12' in /etc/config/wireless, nach Neustart des
+Radios 12 dBm; zurueck auf "(default)" entfernt die Option wieder (21 dBm).
+
+uci:save('wireless') statt uci:commit('wireless'): Ein Commit nimmt alles mit,
+was in /tmp/.uci/wireless steht, auch die Laufzeit-Deltas von
+neanderfunk-ap-timer und neanderfunk-ssid-changer, und schriebe sie in den
+Flash, bevor gluon-reconfigure sie zuruecknimmt (000-neanderfunk-ap-timer).
+Gespeichert landet die Sendeleistung als Delta neben ihnen und wird von
+Gluons 998-commit am Ende von gluon-reconfigure committet. Im Test blieb ein
+gesetztes Delta client_radio0.disabled=1 entsprechend ungespeichert.
+
+Setzt auf dem Zustand nach outdoor-schalter.sh auf.
+
+diff --git a/package/gluon-web-wifi-config/luasrc/lib/gluon/config-mode/model/admin/wifi-config.lua b/package/gluon-web-wifi-config/luasrc/lib/gluon/config-mode/model/admin/wifi-config.lua
+index d0be900..aed1fc2 100644
+--- a/package/gluon-web-wifi-config/luasrc/lib/gluon/config-mode/model/admin/wifi-config.lua
++++ b/package/gluon-web-wifi-config/luasrc/lib/gluon/config-mode/model/admin/wifi-config.lua
+@@ -179,6 +179,13 @@ end
+ 
+ 
+ function f:write()
++	-- neanderfunk: Die Sendeleistung steht als einzige Option dieser Seite in
++	-- wireless. Seit 2025.1 wird hier nur noch gluon committet, die Aenderung
++	-- an wireless verfiel mit dem Prozess. Nur speichern, nicht committen:
++	-- committet wird von 998-commit am Ende von gluon-reconfigure, nach den
++	-- Upgrade-Skripten, die Laufzeit-Deltas (ap-timer, ssid-changer) in
++	-- wireless erst zuruecknehmen.
++	uci:save('wireless')
+ 	uci:commit('gluon')
+ 	os.execute('exec gluon-reconfigure >/dev/null')
+ end

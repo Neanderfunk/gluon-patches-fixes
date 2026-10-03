@@ -53,6 +53,7 @@ machen weiter. Scheitert einer, brechen sie mit Fehler ab.
 | `gluon-config-mode/wizard-save-only.sh` | post-update | Wizard mit „Speichern“ ohne Neustart, Warnung beim Verlassen | |
 | `gluon-config-mode/wizard-save-lock.sh` | post-update | nur ein „Speichern & Neustarten“ gleichzeitig | |
 | `gluon-config-mode/outdoor-schalter.sh` | post-update | Outdoor-Schalter unabhängig von `preserve_channels` | |
+| `gluon-config-mode/wifi-txpower-save.sh` | post-update | Sendeleistung aus den Erweiterten Einstellungen kommt wirklich in `/etc/config/wireless` (`uci:save('wireless')` vor `gluon-reconfigure`, committet von 998-commit) | Fehler aus Gluon 2025.1: dort wird nur noch gluon committet; upstream main/v2025.1.x noch offen (Stand 03.10.2026); am WDR3600 nachgestellt und mit Patch validiert |
 | `lowmem/state-check-shell.sh` | post-update | gluon-state-check als Shell statt Lua | |
 | `lowmem/tunneldigger-watchdog-shell.sh` | post-update | tunneldigger-watchdog als Shell statt Lua; seit 2025.1 im Paket `ff-mesh-vpn-tunneldigger` der community-packages | |
 | `bugfixes/wired-hop-penalty.sh` | post-update | Kabel-Mesh: `gluon_wired` meldet `hop_penalty` nicht als Option an, die Hop-Penalty am Kabel bleibt sonst immer 0 (WLAN und VPN nicht betroffen) | Fehler aus Gluon 0c30629 (PR #3454, Merge 9143b02): der PR meldet die Option nur in `gluon_mesh` an; kein Backport, sondern die fehlende Zeile. Upstream noch offen (main/v2025.1.x/next, Stand 02.10.2026); entfällt, wenn Gluon die Option anmeldet |
@@ -62,6 +63,7 @@ machen weiter. Scheitert einer, brechen sie mit Fehler ab.
 ## Abhängigkeiten
 
 * `gluon-config-mode/wizard-save-lock.sh` setzt `wizard-save-only.sh` voraus.
+* `gluon-config-mode/wifi-txpower-save.sh` setzt `outdoor-schalter.sh` voraus (gleiche Datei).
 * pre-update-Skripte wirken nur, wenn danach `make update` läuft.
 * `lowmem/tunneldigger-watchdog-shell.sh` braucht die
   [community-packages](https://github.com/freifunk-gluon/community-packages)
