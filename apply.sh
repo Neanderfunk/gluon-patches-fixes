@@ -29,6 +29,8 @@ PRE_UPDATE=(
   bugfixes/perl-no-parallel.sh                  # perl seriell bauen (Race Condition bei -j)
   build/disable-manifest.sh                     # image-customization: disable_manifest() (vor make clean noetig)
   bugfixes/dnsmasq-no-dnssec.sh                 # dnsmasq-full ohne DNSSEC (~460 KB weniger)
+  # Nicht aktiv (adorfer 04.10.2026): vorbereitet und gebaut, nicht in den Builds.
+  # package-fixes/add-gluon-autoupdater-hardening.sh  # Autoupdater: feindliche Manifest-Antworten sofort abbrechen
 )
 
 # Reihenfolge wie im Neanderfunk-Bau. Abhaengig sind wizard-save-lock von
