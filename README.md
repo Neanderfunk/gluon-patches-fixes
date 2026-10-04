@@ -47,6 +47,7 @@ machen weiter. Scheitert einer, brechen sie mit Fehler ab.
 | `lowflash/squashfs-1024-tiny.sh` | post-update | ar71xx-tiny: squashfs-Blöcke 1024 statt 256 KiB, rund 73 KiB weniger Rootfs (am WR841N-v9-Rootfs gemessen); Preis grob 3 MB RAM (Fragment-Cache), RAM ist auf 4/32 weniger knapp als Flash (adorfer) | eigen, OpenWrt-19.07-Vorgabe für SMALL_FLASH |
 | `lowflash/zram-lzo-only.sh` | post-update | `kmod-zram` hängt nur noch an `kmod-lib-lzo`: lz4 lag ungenutzt im Image (zram nimmt lzo), ~13 KiB weniger Rootfs. RAM-Druck am Testgerät beobachten | eigen, Freigabe adorfer 04.10.2026 |
 | `lowflash/upgrade-helpers-tiny.sh` | post-update | base-files: `allnet.sh`, `dir825.sh`, `merakinand.sh`, `openmesh.sh` nur in ar71xx/tiny weglassen; kein tiny-Board ruft sie auf (Abgleich platform.sh gegen Gluons tiny-Liste), ~6 KiB | eigen, Auftrag adorfer 04.10.2026 |
+| `lowmem/limit-wireless-buffers.sh` | post-update | fq_memory_limit gestaffelt wie Gluon 2025.1 (8f38662f) plus unser 2-MB-Deckel; für ≤32 MB auf 128 KiB halbiert (2021.1: 256 KiB). Auch per `iw … set txq memory_limit` | Entscheidung adorfer 04.10.2026 (WLAN-Puffer kleiner) |
 
 Weitere Backports für die Sackgasse (dnsmasq CVE-2026-2291, Autoupdater-
 und uclient-Fixes) folgen hier.
