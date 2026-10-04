@@ -1,0 +1,25 @@
+kmod-zram: nur lzo, ohne lz4 (Sackgasse, 4/32).
+
+kmod-zram zieht in OpenWrt 19.07 kmod-lib-lzo und kmod-lib-lz4. zram nutzt
+nur einen Algorithmus; der Kernel 4.14 nimmt ohne Einstellung lzo, das
+zram.init der Sackgasse setzt keinen anderen (uci zram_comp_algo leer). lz4
+lag damit ungenutzt im Image: lz4.ko 3,5 KB, lz4_compress.ko 26,7 KB,
+lz4_decompress.ko 20,2 KB. Ohne sie ist das Rootfs des WR841N v9 rund 13 KiB
+(1024-KiB-Bloecke) bzw. 16 KiB (256 KiB) kleiner. Nichts anderes im Image
+braucht lz4 (squashfs nutzt xz). Wer lz4 per uci setzt, bekommt eine
+Logzeile von zram.init, zram laeuft mit lzo weiter.
+
+Beobachten: RAM-Druck am Testgeraet (lzo komprimiert etwas besser als lz4,
+ist aber langsamer beim Entpacken).
+
+--- a/package/kernel/linux/modules/other.mk	2026-10-04 15:26:01.595616208 +0200
++++ b/package/kernel/linux/modules/other.mk	2026-10-04 15:26:01.603118970 +0200
+@@ -813,7 +813,7 @@
+ define KernelPackage/zram
+   SUBMENU:=$(OTHER_MENU)
+   TITLE:=ZRAM
+-  DEPENDS:=+kmod-lib-lzo +kmod-lib-lz4
++  DEPENDS:=+kmod-lib-lzo
+   KCONFIG:= \
+ 	CONFIG_ZSMALLOC \
+ 	CONFIG_ZRAM \
