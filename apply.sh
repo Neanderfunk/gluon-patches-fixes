@@ -48,6 +48,7 @@ POST_UPDATE=(
   lowmem/state-check-shell.sh                   # gluon-state-check als Shell statt Lua
   lowmem/tunneldigger-watchdog-shell.sh         # tunneldigger-watchdog als Shell statt Lua
   bugfixes/wired-hop-penalty.sh                 # Kabel-Mesh: hop_penalty kommt bei batman-adv an
+  security/uhttpd-header-limit.sh               # uhttpd: Header-Grenze je Request (f6c2fcfa, fehlt in 24.10)
 )
 
 PHASE="${1:-}"
