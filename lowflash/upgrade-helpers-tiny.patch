@@ -1,0 +1,31 @@
+base-files: Upgrade-Helfer fremder Boardfamilien aus ar71xx/tiny entfernen (Sackgasse, 4/32).
+
+/lib/upgrade/allnet.sh, dir825.sh, merakinand.sh und openmesh.sh definieren
+nur Funktionen, die platform.sh fuer bestimmte Boards aufruft:
+  allnet     all0258n, all0315n, cap324, cap4200ag, cr3000, cr5000,
+             eap300v2, ens202ext
+  dir825     bsb, dir-825-b1, tew-673gru
+  openmesh   a40, a60, mr1750(v2), mr600(v2), mr900(v2), om2p*, om5p*
+  merakinand mr18, z1
+Keines davon ist ein ar71xx-tiny-Geraet (Gluon 3181e496 targets/ar71xx-tiny:
+TP-Link plus DIR-615 C1). sysupgrade und stage2 laden /lib/upgrade per
+include; eine fehlende Datei faellt dort nicht auf, die Funktionen werden
+fuer tiny-Boards nie aufgerufen. Gemessen (xz einzeln): 1616 + 1408 + 1380 +
+1868 Byte, rund 6 KiB weniger Rootfs.
+
+Nur fuer BOARD/SUBTARGET ar71xx/tiny, wie der nand.sh-Fall darueber.
+
+--- a/package/base-files/Makefile	2026-10-04 15:30:36.164853125 +0200
++++ b/package/base-files/Makefile	2026-10-04 15:30:36.176326631 +0200
+@@ -136,6 +136,11 @@
+ 			$(CP) $(PLATFORM_SUBDIR)/base-files/* $(1)/; \
+ 		fi; \
+ 	)
++	# Neanderfunk: Upgrade-Helfer fuer Boardfamilien, die es in ar71xx/tiny nicht gibt
++	$(if $(filter ar71xx/tiny,$(BOARD)/$(SUBTARGET)), \
++		rm -f $(1)/lib/upgrade/allnet.sh $(1)/lib/upgrade/dir825.sh \
++			$(1)/lib/upgrade/merakinand.sh $(1)/lib/upgrade/openmesh.sh; \
++	)
+ 
+ 	$(VERSION_SED_SCRIPT) \
+ 		$(1)/etc/banner \

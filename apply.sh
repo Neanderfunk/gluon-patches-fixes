@@ -30,6 +30,7 @@ PRE_UPDATE=(
 POST_UPDATE=(
   lowflash/squashfs-1024-tiny.sh                # ar71xx-tiny: squashfs 1024 KiB, ~73 KiB Flash weniger
   lowflash/zram-lzo-only.sh                     # kmod-zram ohne ungenutztes lz4, ~13 KiB Flash weniger
+  lowflash/upgrade-helpers-tiny.sh              # ar71xx/tiny ohne Upgrade-Helfer fremder Boardfamilien, ~6 KiB
 )
 
 PHASE="${1:-}"
