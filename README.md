@@ -44,6 +44,7 @@ machen weiter. Scheitert einer, brechen sie mit Fehler ab.
 | Skript | Phase | Zweck | Herkunft, Ende |
 | --- | --- | --- | --- |
 | `bugfixes/tunneldigger-reinit-backoff.sh` | pre-update | tunneldigger: Reinit mit Pause, kein modprobe für ein fehlendes mesh-vpn (Knoten mit VPN an, aber ohne WAN). In 2021.1 liegt tunneldigger im Gluon-Paketfeed, der Modulpatch geht deshalb nach `patches/packages/gluon` | Port aus `v2025.1.x`/`v2023.2.x`; Quelle 8995046 gleich, Quellpatch passt mit fuzz 0; `git am` auf packages `9f4be8aa` (Pin von Gluon `3181e496`) geprüft |
+| `lowflash/squashfs-1024-tiny.sh` | post-update | ar71xx-tiny: squashfs-Blöcke 1024 statt 256 KiB, rund 73 KiB weniger Rootfs (am WR841N-v9-Rootfs gemessen); Preis grob 3 MB RAM (Fragment-Cache), RAM ist auf 4/32 weniger knapp als Flash (adorfer) | eigen, OpenWrt-19.07-Vorgabe für SMALL_FLASH |
 
 Weitere Backports für die Sackgasse (dnsmasq CVE-2026-2291, Autoupdater-
 und uclient-Fixes) folgen hier.

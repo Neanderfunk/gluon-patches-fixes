@@ -1,0 +1,24 @@
+ar71xx-tiny: squashfs-Bloecke 1024 KiB statt 256 KiB (Sackgasse, 4/32).
+
+Auf den 4-MB-Geraeten beisst der Flash, nicht der RAM (adorfer 04.10.2026):
+84 KiB Overlay frei am WR841N v9 (24111111sta). Das Rootfs des WR841N v9 aus
+24111216sackgasse mit xz neu gepackt: 256 KiB -> 2153 KiB, 512 KiB -> 2117 KiB,
+1024 KiB -> 2079 KiB, also rund 73 KiB (gut ein Erase-Block) weniger.
+OpenWrt 19.07 waehlt 1024 KiB selbst fuer SMALL_FLASH ohne
+LOW_MEMORY_FOOTPRINT (config/Config-images.in); Gluon setzt in
+targets/generic 256 KiB per try_config, der Eintrag hier ueberschreibt das
+(wie ar71xx-generic mit 64 KiB).
+
+Preis: mehr RAM fuer den Fragment-Cache (3 Bloecke) und den Lesepuffer,
+grob 3 MB auf 32 MB; dazu mehr Dekompression je Seitenfehler. Am Testgeraet
+MemAvailable, Refaults und Load beobachten.
+
+--- a/targets/ar71xx-tiny	2026-10-04 15:19:20.691025137 +0200
++++ b/targets/ar71xx-tiny	2026-10-04 15:19:20.704929787 +0200
+@@ -1,4 +1,6 @@
+ config('GLUON_SPECIALIZE_KERNEL', true)
++-- Neanderfunk: groessere squashfs-Bloecke, Flash ist knapper als RAM
++config('TARGET_SQUASHFS_BLOCK_SIZE', 1024)
+ 
+ no_opkg()
+ 

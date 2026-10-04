@@ -28,6 +28,7 @@ PRE_UPDATE=(
 )
 
 POST_UPDATE=(
+  lowflash/squashfs-1024-tiny.sh                # ar71xx-tiny: squashfs 1024 KiB, ~73 KiB Flash weniger
 )
 
 PHASE="${1:-}"
