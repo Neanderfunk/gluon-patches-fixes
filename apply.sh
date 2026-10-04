@@ -25,6 +25,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 PRE_UPDATE=(
   bugfixes/tunneldigger-reinit-backoff.sh       # tunneldigger: Reinit mit Pause, kein modprobe
+  security/batman-adv-2024.3.sh                 # batman-adv/batctl 2024.3 + Fixes aus openwrt-24.10 (Modulpatch)
 )
 
 POST_UPDATE=(
