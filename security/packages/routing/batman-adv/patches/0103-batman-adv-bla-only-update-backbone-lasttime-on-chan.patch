@@ -1,0 +1,35 @@
+From: Sven Eckelmann <sven@narfation.org>
+Date: Wed, 29 Jul 2026 23:04:15 +0200
+Subject: batman-adv: bla: only update backbone lasttime on changed claim backbone
+
+The old behavior before commit d88d7ea0d0be ("batman-adv: bla: avoid CRC
+corruption due to parallel claim add") was to only update the
+backbone_gw->lasttime when the backbone_gw of the claim changed. But afte
+the CRC fix, the backbone_gw->lasttime was updated for each handled claim.
+
+Return back to the old behavior and only update it when the backbone_gw was
+changed.
+
+Fixes: d88d7ea0d0be ("batman-adv: bla: avoid CRC corruption due to parallel claim add")
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Origin: upstream, https://git.open-mesh.org/batman-adv.git/commit/d0ded7c51e738a4d0e477ca115d4cbf6fcf77b93
+
+--- a/net/batman-adv/bridge_loop_avoidance.c
++++ b/net/batman-adv/bridge_loop_avoidance.c
+@@ -769,6 +769,8 @@ static void batadv_bla_add_claim(struct batadv_priv *bat_priv,
+ 		spin_lock_bh(&backbone_gw->crc_lock);
+ 		backbone_gw->crc ^= claim_crc;
+ 		spin_unlock_bh(&backbone_gw->crc_lock);
++
++		WRITE_ONCE(backbone_gw->lasttime, jiffies);
+ 	}
+ 
+ 	if (old_backbone_gw) {
+@@ -780,7 +782,6 @@ static void batadv_bla_add_claim(struct batadv_priv *bat_priv,
+ 		batadv_backbone_gw_put(old_backbone_gw);
+ 	}
+ 
+-	WRITE_ONCE(backbone_gw->lasttime, jiffies);
+ 	batadv_claim_put(claim);
+ }
+ 
