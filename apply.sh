@@ -34,6 +34,8 @@ POST_UPDATE=(
   lowflash/zram-lzo-only.sh                     # kmod-zram ohne ungenutztes lz4, ~13 KiB Flash weniger
   lowflash/upgrade-helpers-tiny.sh              # ar71xx/tiny ohne Upgrade-Helfer fremder Boardfamilien, ~6 KiB
   security/userspace-backports.sh               # uhttpd, dnsmasq EDNS, uclient, odhcp6c, busybox, ubus, autoupdater, sse-multiplex
+  gluon-config-mode/wizard-save-only.sh         # Wizard: Speichern ohne Neustart (XHTML-Fassung)
+  gluon-config-mode/wizard-save-lock.sh         # Wizard: nur ein Speichern gleichzeitig (nach save-only)
 )
 
 PHASE="${1:-}"
