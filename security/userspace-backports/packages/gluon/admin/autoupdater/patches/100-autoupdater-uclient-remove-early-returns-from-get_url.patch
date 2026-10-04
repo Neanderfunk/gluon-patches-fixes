@@ -1,0 +1,49 @@
+From 5521926500f3c8beca6f2ba59488901c2bd9c3d8 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <mschiffer@universe-factory.net>
+Date: Fri, 24 Feb 2023 20:26:33 +0100
+Subject: [PATCH] autoupdater: uclient: remove early returns from get_url()
+
+Simplify control flow by removing early returns. This allows us to
+deduplicate cleanup (uclient_free() for now).
+(cherry picked from commit 5521926500f3c8beca6f2ba59488901c2bd9c3d8)
+[Backport to freifunk-gluon/packages v2021.1.x 9f4be8aa (Gluon v2021.1.x)
+ by Freifunk im Neanderland <projekt@neanderfunk.de>: code unchanged.
+ Package patch, paths relative to src/. Prerequisite for e4bd7a4.]
+---
+ uclient.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/uclient.c b/uclient.c
+--- a/uclient.c
++++ b/uclient.c
+@@ -159,6 +159,7 @@ int get_url(const char *url, void (*read_cb)(struct uclient *cl), void *cb_data,
+ 		.data_eof = eof_cb,
+ 		.error = request_done,
+ 	};
++	int ret = UCLIENT_ERROR_CONNECT;
+ 
+ 	struct uclient *cl = uclient_new(url, NULL, &cb);
+ 	if (!cl)
+@@ -182,16 +183,17 @@ int get_url(const char *url, void (*read_cb)(struct uclient *cl), void *cb_data,
+ 	if (uclient_request(cl))
+ 		goto err;
+ 	uloop_run();
+-	uclient_free(cl);
+ 
+-	if (!d.err_code && d.length >= 0 && d.downloaded != d.length)
+-		return UCLIENT_ERROR_SIZE_MISMATCH;
++	if (!d.err_code && d.length >= 0 && d.downloaded != d.length) {
++		ret = UCLIENT_ERROR_SIZE_MISMATCH;
++		goto err;
++	}
+ 
+-	return d.err_code;
++	ret = d.err_code;
+ 
+ err:
+ 	if (cl)
+ 		uclient_free(cl);
+ 
+-	return UCLIENT_ERROR_CONNECT;
++	return ret;
+ }

@@ -1,0 +1,43 @@
+From 04d2b6ffbb6ee02012f2733b7752d8db0d12eaff Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <mschiffer@universe-factory.net>
+Date: Thu, 23 Jun 2022 22:38:16 +0200
+Subject: [PATCH] sse-multiplex: fix pipe FD leaks
+
+sse-multiplexd leaked pipe FDs to its child processes, so newer children
+kept the older ones alive when they should have received a SIGPIPE already.
+
+Closes freifunk-gluon/gluon#2468
+(cherry picked from commit 04d2b6ffbb6ee02012f2733b7752d8db0d12eaff)
+[Backport to freifunk-gluon/packages v2021.1.x 9f4be8aa (Gluon v2021.1.x)
+ by Freifunk im Neanderland <projekt@neanderfunk.de>: code unchanged.
+ Rewritten as a package patch (paths relative to src/, which
+ Build/Prepare copies to PKG_BUILD_DIR before applying patches/).]
+---
+ sse-multiplexd.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/sse-multiplexd.c b/sse-multiplexd.c
+--- a/sse-multiplexd.c
++++ b/sse-multiplexd.c
+@@ -97,7 +97,7 @@ struct provider {
+ 
+ static int run_command(const char *command) {
+         int pipefd[2];
+-        if (pipe(pipefd) < 0) {
++        if (pipe2(pipefd, O_CLOEXEC) < 0) {
+                 syslog(LOG_ERR, "pipe: %s", strerror(errno));
+                 return -1;
+         }
+@@ -115,12 +115,8 @@ static int run_command(const char *command) {
+                 return pipefd[0];
+         }
+         else {
+-                close(pipefd[0]);
+                 dup2(pipefd[1], STDOUT_FILENO);
+ 
+-                if (pipefd[1] != STDOUT_FILENO)
+-                        close(pipefd[1]);
+-
+                 struct sigaction action = {};
+                 sigemptyset(&action.sa_mask);
+ 

@@ -1,0 +1,40 @@
+From 5586934da01f1d802606459829235e87ab12aae0 Mon Sep 17 00:00:00 2001
+From: "Bertie, Taylor" <bertiet@amazon.com>
+Date: Sun, 31 Jul 2022 17:20:21 +0100
+Subject: [PATCH] Bound the value of UDP packet size in the EDNS0 header of
+ forwarded queries to the configured or default value of edns-packet-max.
+ There's no point letting a client set a larger value if we're unable to
+ return the answer.
+
+(cherry picked from commit 5586934da01f1d802606459829235e87ab12aae0)
+[Backport to dnsmasq 2.80 (OpenWrt 19.07, Gluon v2021.1.x) by Freifunk im
+ Neanderland <projekt@neanderfunk.de>: CHANGELOG hunk dropped; same code
+ change in receive_query(), trailing context adapted (2.80 has no
+ HAVE_CONNTRACK block there). Needed together with the CVE-2023-28450
+ default change: without it a client's EDNS size of 4096 is forwarded
+ unchanged and upstream replies above edns-packet-max + 1035 bytes are
+ cut off by recvfrom() and passed on as a broken answer (tested).]
+---
+ src/forward.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/forward.c b/src/forward.c
+--- a/src/forward.c
++++ b/src/forward.c
+@@ -1588,11 +1588,15 @@ void receive_query(struct listener *listen, time_t now)
+ 	
+       /* If the client provides an EDNS0 UDP size, use that to limit our reply.
+ 	 (bounded by the maximum configured). If no EDNS0, then it
+-	 defaults to 512 */
++	 defaults to 512. We write this value into the query packet too, so that
++	 if it's forwarded, we don't specify a maximum size greater than we can handle. */
+       if (udp_size > daemon->edns_pktsz)
+ 	udp_size = daemon->edns_pktsz;
+       else if (udp_size < PACKETSZ)
+ 	udp_size = PACKETSZ; /* Sanity check - can't reduce below default. RFC 6891 6.2.3 */
++
++      pheader -= 6; /* ext_class */
++      PUTSHORT(udp_size, pheader); /* Bounding forwarded queries to maximum configured */
+     }
+ 
+ #ifdef HAVE_AUTH

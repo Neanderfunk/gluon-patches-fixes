@@ -1,0 +1,90 @@
+From 440ca260622dd0701c343e40b1142a98e9ddd24c Mon Sep 17 00:00:00 2001
+From: Hauke Mehrtens <hauke@hauke-m.de>
+Date: Fri, 24 Apr 2026 00:17:01 +0200
+Subject: [PATCH] uclient-http: validate Content-Length and chunk sizes from
+ the server
+
+Both Content-Length and the hex chunk size in chunked transfer encoding
+were parsed with strtoul() and then stored in a signed long. A server
+that returned a negative value, a value larger than LONG_MAX, or trailing
+garbage could wrap the stored length to a negative number or an otherwise
+bogus value. Downstream code then misinterpreted the state (e.g.
+content_length = -1 is "unknown length"), which could keep a connection
+open past its real body or confuse the chunked decoder.
+
+Parse both with strtoll() and reject empty input, negative values and
+overflow (LONG_MAX). For Content-Length also reject trailing garbage and
+fall back to -1 ("unknown length") on any malformed value. For the chunk
+size do not reject trailing characters, since a valid chunk size may be
+followed by a ';'-prefixed chunk extension; abort the transfer instead
+when the size itself cannot be parsed.
+
+Assisted-by: Claude:claude-opus-4-7
+Link: https://github.com/openwrt/uclient/pull/16
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+(cherry picked from commit 440ca260622dd0701c343e40b1142a98e9ddd24c)
+[Backport to uclient 2020-06-17-51e16ebf (OpenWrt 19.07, Gluon v2021.1.x)
+ by Freifunk im Neanderland <projekt@neanderfunk.de>: code unchanged,
+ hunks refreshed for line offsets only.]
+---
+ uclient-http.c | 27 +++++++++++++++++++++++----
+ 1 file changed, 23 insertions(+), 4 deletions(-)
+
+diff --git a/uclient-http.c b/uclient-http.c
+--- a/uclient-http.c
++++ b/uclient-http.c
+@@ -22,6 +22,8 @@
+ #include <stdint.h>
+ #include <string.h>
+ #include <fcntl.h>
++#include <errno.h>
++#include <limits.h>
+ 
+ #include <libubox/ustream.h>
+ #include <libubox/ustream-ssl.h>
+@@ -277,8 +279,18 @@ static void uclient_http_process_headers(struct uclient_http *uh)
+ 		uh->connection_close = true;
+ 
+ 	cur = tb[HTTP_HDR_CONTENT_LENGTH];
+-	if (cur)
+-		uh->content_length = strtoul(blobmsg_data(cur), NULL, 10);
++	if (cur) {
++		const char *val = blobmsg_data(cur);
++		char *end;
++		long long len;
++
++		errno = 0;
++		len = strtoll(val, &end, 10);
++		if (end == val || *end || errno || len < 0 || len > LONG_MAX)
++			uh->content_length = -1;
++		else
++			uh->content_length = len;
++	}
+ 
+ 	cur = tb[HTTP_HDR_AUTH];
+ 	if (cur) {
+@@ -1086,7 +1098,8 @@ uclient_http_read(struct uclient *cl, char *buf, unsigned int len)
+ 	read_len = 0;
+ 
+ 	if (uh->read_chunked == 0) {
+-		char *sep;
++		char *sep, *end;
++		long long chunk_len;
+ 
+ 		if (data[0] == '\r' && data[1] == '\n') {
+ 			data += 2;
+@@ -1098,7 +1111,13 @@ uclient_http_read(struct uclient *cl, char *buf, unsigned int len)
+ 			return 0;
+ 
+ 		*sep = 0;
+-		uh->read_chunked = strtoul(data, NULL, 16);
++		errno = 0;
++		chunk_len = strtoll(data, &end, 16);
++		if (end == data || chunk_len < 0 || chunk_len > LONG_MAX || errno) {
++			uclient_http_error(uh, UCLIENT_ERROR_UNKNOWN);
++			return 0;
++		}
++		uh->read_chunked = chunk_len;
+ 
+ 		read_len += sep + 2 - data;
+ 		data = sep + 2;

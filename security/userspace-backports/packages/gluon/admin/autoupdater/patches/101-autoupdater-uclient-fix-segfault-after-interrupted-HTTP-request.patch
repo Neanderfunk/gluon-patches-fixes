@@ -1,0 +1,51 @@
+From e4bd7a45494c746caa2eab99ad4825dbc5787faf Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <mschiffer@universe-factory.net>
+Date: Fri, 24 Feb 2023 20:41:09 +0100
+Subject: [PATCH] autoupdater: uclient: fix segfault after interrupted HTTP
+ request
+
+uloop_run() may finish without ever reaching request_done(), for example
+when the main loop is interrupted by a signal. In this case,
+uclient_disconnect() was never called, leaving a number of callbacks
+like timeout handlers registered in the uloop context.
+
+When the main loop was later resumed in a subsequent HTTP request without
+completely reinitializing the uloop context, these timeout handlers could
+still fire, even though the old uclient context had already been freed,
+resulting in a use-after-free.
+
+To avoid this, move the uclient_disconnect() call out of request_done()
+to ensure that it is always called before uclient_free().
+(cherry picked from commit e4bd7a45494c746caa2eab99ad4825dbc5787faf)
+[Backport to freifunk-gluon/packages v2021.1.x 9f4be8aa (Gluon v2021.1.x)
+ by Freifunk im Neanderland <projekt@neanderfunk.de>: code unchanged.
+ Package patch, paths relative to src/. Pair with uclient 007d945
+ (OpenWrt package uclient), which cancels the remaining state change
+ timeout inside uclient_disconnect().]
+---
+ uclient.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/uclient.c b/uclient.c
+--- a/uclient.c
++++ b/uclient.c
+@@ -74,7 +74,6 @@ const char *uclient_get_errmsg(int code) {
+ 
+ static void request_done(struct uclient *cl, int err_code) {
+ 	uclient_data(cl)->err_code = err_code;
+-	uclient_disconnect(cl);
+ 	uloop_end();
+ }
+ 
+@@ -192,8 +191,10 @@ int get_url(const char *url, void (*read_cb)(struct uclient *cl), void *cb_data,
+ 	ret = d.err_code;
+ 
+ err:
+-	if (cl)
++	if (cl) {
++		uclient_disconnect(cl);
+ 		uclient_free(cl);
++	}
+ 
+ 	return ret;
+ }
