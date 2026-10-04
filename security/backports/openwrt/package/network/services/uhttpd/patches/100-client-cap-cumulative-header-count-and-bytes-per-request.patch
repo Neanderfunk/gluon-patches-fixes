@@ -1,0 +1,105 @@
+From f6c2fcfa539de49ddf6de8f805110c8804602e98 Mon Sep 17 00:00:00 2001
+From: Jo-Philipp Wich <jo@mein.io>
+Date: Wed, 22 Jul 2026 00:28:24 +0200
+Subject: [PATCH] client: cap cumulative header count and bytes per request
+
+client_parse_header() imposes no limit on the number of header lines
+or the cumulative header bytes accepted for a single request; only a
+~4096-byte per-line limit exists via the ustream read buffer. Each
+parsed header is appended to a libubox blob_buf (cl->hdr) that grows
+on the heap up to the ~16 MiB blob length-mask ceiling. A single
+connection can therefore pin up to ~16 MiB, and a handful of
+concurrent keep-alive connections streaming headers toward that cap
+(without ever sending the terminating empty line) exhaust memory and
+can OOM-kill the daemon - a pre-auth, no-auth remote denial of
+service of the default configuration.
+
+Track the header count and cumulative header bytes per request and
+reject the request with 431 Request Header Fields Too Large once
+either exceeds a fixed budget (100 headers / 16 KiB total, in line
+with Apache's LimitRequestFields default and Node.js's default
+max-header-size) before the line is appended to cl->hdr, so a
+connection can no longer pin an unbounded amount of memory.
+
+Link: https://github.com/openwrt/uhttpd/security/advisories/GHSA-vhx4-3p5q-m59q
+Reported-by: @puru1761
+Assisted-by: Claude:claude-sonnet-5
+Signed-off-by: Jo-Philipp Wich <jo@mein.io>
+(cherry picked from commit f6c2fcfa539de49ddf6de8f805110c8804602e98)
+[Backport to uhttpd 2023-06-25-34a8a74d (OpenWrt 23.05, Gluon v2023.2.x)
+ by Freifunk im Neanderland <projekt@neanderfunk.de>: code unchanged,
+ hunks refreshed for line offsets only; CVE-2026-102338]
+---
+ client.c | 18 +++++++++++++++---
+ uhttpd.h |  7 +++++++
+ 2 files changed, 22 insertions(+), 3 deletions(-)
+
+diff --git a/client.c b/client.c
+index c037cc7..7a5053d 100644
+--- a/client.c
++++ b/client.c
+@@ -325,7 +325,7 @@ static void client_header_complete(struct client *cl)
+ 	uh_handle_request(cl);
+ }
+ 
+-static void client_parse_header(struct client *cl, char *data)
++static void client_parse_header(struct client *cl, char *data, size_t line_len)
+ {
+ 	struct http_request *r = &cl->request;
+ 	char *err;
+@@ -339,6 +339,18 @@ static void client_parse_header(struct client *cl, char *data)
+ 		return;
+ 	}
+ 
++	/* Cap header count and cumulative header bytes so a connection
++	 * cannot pin an unbounded amount of memory in cl->hdr; line_len
++	 * includes the CRLF stripped from the line by the caller.
++	 */
++	r->header_count++;
++	r->header_bytes += line_len;
++	if (r->header_count > UH_LIMIT_HEADER_COUNT ||
++	    r->header_bytes > UH_LIMIT_HEADER_BYTES) {
++		uh_header_error(cl, 431, "Request Header Fields Too Large");
++		return;
++	}
++
+ 	val = uh_split_header(data);
+ 	if (!val) {
+ 		cl->state = CLIENT_STATE_DONE;
+@@ -498,9 +510,9 @@ static bool client_header_cb(struct client *cl, char *buf, int len)
+ 	if (!newline)
+ 		return false;
+ 
+-	*newline = 0;
+-	client_parse_header(cl, buf);
+ 	line_len = newline + 2 - buf;
++	*newline = 0;
++	client_parse_header(cl, buf, line_len);
+ 	ustream_consume(cl->us, line_len);
+ 	if (cl->state == CLIENT_STATE_DATA)
+ 		return client_data_cb(cl, newline + 2, len - line_len);
+diff --git a/uhttpd.h b/uhttpd.h
+index c755df6..15b7623 100644
+--- a/uhttpd.h
++++ b/uhttpd.h
+@@ -44,6 +44,11 @@
+ 
+ #define UH_LIMIT_CLIENTS	64
+ 
++/* per-request cumulative header limits, aligned with common HTTP server
++ * defaults (Apache LimitRequestFields=100, Node.js max-header-size=16 KiB) */
++#define UH_LIMIT_HEADER_COUNT	100
++#define UH_LIMIT_HEADER_BYTES	16384
++
+ #define __enum_header(_name, _val) HDR_##_name,
+ #define __blobmsg_header(_name, _val) [HDR_##_name] = { .name = #_val, .type = BLOBMSG_TYPE_STRING },
+ 
+@@ -149,6 +154,8 @@ struct http_request {
+ 	bool disable_chunked;
+ 	uint8_t transfer_chunked;
+ 	const struct auth_realm *realm;
++	size_t header_count;
++	size_t header_bytes;
+ };
+ 
+ enum client_state {

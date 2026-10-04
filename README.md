@@ -49,6 +49,7 @@ machen weiter. Scheitert einer, brechen sie mit Fehler ab.
 | `gluon-config-mode/outdoor-schalter.sh` | post-update | Outdoor-Schalter unabhängig von `preserve_channels` | |
 | `lowmem/state-check-shell.sh` | post-update | gluon-state-check als Shell statt Lua | |
 | `lowmem/tunneldigger-watchdog-shell.sh` | post-update | tunneldigger-watchdog als Shell statt Lua | |
+| `security/backports.sh` | post-update | Sicherheits-Backports, kopiert in den Gluon-Baum: mac80211 Mesh-CSA (CVE-2026-23279/-23396), uhttpd Header-Grenze (f6c2fcfa), l2tp Control-Buffer (Gluons eigener Patch liegt unter pending-6.6 und greift in 23.05 nicht), batman-adv CVE-2026-31659/-52916/-72226. Etwa 0,1-0,2 KiB. Nicht gebaut (2023.2 out of scope) | Recherche router-werkstatt `docs/recherche-19.07/`; fuzz 0, Kompilierprobe mips_24kc gcc 12.3, uhttpd-Lauftest |
 
 ## Abhängigkeiten
 

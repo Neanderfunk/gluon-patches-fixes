@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Sven Eckelmann <sven@narfation.org>
+Date: Sat, 16 May 2026 22:10:08 +0200
+Subject: batman-adv: fix batadv_skb_is_frag() kernel-doc
+
+The kernel-doc comment for batadv_skb_is_frag() contained two errors:
+
+* the function description referred to "gain a unicast packet" instead
+  of "contains unicast fragment".
+* the Return section omitted "merged" from "newly skb", leaving the
+  description grammatically incorrect and inconsistent with the
+  function description.
+
+Fixes: b4e35f8c6351 ("batman-adv: frag: disallow unicast fragment in fragment")
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Origin: upstream, https://git.open-mesh.org/batman-adv.git/commit/?id=ff182fc0c666754e3f35f7b63c9ccf0dff239e52
+
+[ Neanderfunk backport for batman-adv 2023.1 (OpenWrt routing openwrt-23.05
+  fa22ff1f, Gluon v2023.2.x): taken from OpenWrt routing openwrt-24.10
+  00619bc7 batman-adv/patches/0040-*; code unchanged, hunks refreshed
+  for line offsets only; kernel-doc follow-up to 0101, no CVE ]
+
+--- a/net/batman-adv/fragmentation.c
++++ b/net/batman-adv/fragmentation.c
+@@ -295,10 +295,10 @@ free:
+ }
+ 
+ /**
+- * batadv_skb_is_frag() - check if newly merged skb is gain a unicast packet
++ * batadv_skb_is_frag() - check if newly merged skb contains unicast fragment
+  * @skb: newly merged skb
+  *
+- * Return: if newly skb is of type BATADV_UNICAST_FRAG
++ * Return: if newly merged skb is of type BATADV_UNICAST_FRAG
+  */
+ static bool batadv_skb_is_frag(struct sk_buff *skb)
+ {

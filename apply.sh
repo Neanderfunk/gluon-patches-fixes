@@ -41,6 +41,7 @@ POST_UPDATE=(
   gluon-config-mode/outdoor-schalter.sh         # Outdoor-Schalter unabhaengig von preserve_channels
   lowmem/state-check-shell.sh                   # gluon-state-check als Shell statt Lua
   lowmem/tunneldigger-watchdog-shell.sh         # tunneldigger-watchdog als Shell statt Lua
+  security/backports.sh                         # mac80211 Mesh-CSA, uhttpd, l2tp, batman-adv CVE-2026 (nicht gebaut)
 )
 
 PHASE="${1:-}"

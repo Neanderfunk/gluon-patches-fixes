@@ -1,0 +1,55 @@
+From d70b592551ff23747e26e74081205babf8dba9b6 Mon Sep 17 00:00:00 2001
+From: David Bauer <mail@david-bauer.net>
+Date: Tue, 18 Nov 2025 01:16:18 +0100
+Subject: [PATCH] l2tp: reset skb control buffer on xmit
+
+[ Upstream commit d70b592551ff23747e26e74081205babf8dba9b6 ]
+
+The L2TP stack did not reset the skb control buffer before sending the
+encapsulated package.
+
+In a setup with an ath10k radio and batman-adv over an L2TP tunnel
+massive fragmentations happen sporadically if the L2TP tunnel is
+established over IPv4.
+
+L2TP might reset some of the fields in the IP control buffer, but L2TP
+assumes the type of the control buffer to be of an IPv4 packet.
+
+In case the L2TP interface is used as a batadv hardif or the packet is
+an IPv6 packet, this assumption breaks.
+
+Clear the entire control buffer to avoid such mishaps altogether.
+
+Fixes: f77ae9390438 ("[PPPOL2TP]: Reset meta-data in xmit function")
+Signed-off-by: David Bauer <mail@david-bauer.net>
+Link: https://patch.msgid.link/20251118001619.242107-1-mail@david-bauer.net
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+
+[ Neanderfunk backport to Linux 5.15.211 (OpenWrt 23.05, Gluon v2023.2.x):
+  code unchanged, hunk line numbers refreshed only. Gluon v2023.2.x carries
+  this fix as patches/openwrt/0012-net-l2tp-reset-skb-control-buffer.patch,
+  but that file is placed in target/linux/generic/pending-6.6/, which
+  OpenWrt 23.05 (kernel 5.15 only) never applies. Not in linux-5.15.y
+  up to 5.15.211. ]
+---
+ net/l2tp/l2tp_core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+index 369a2f2e459cdb..0710281dd95aac 100644
+--- a/net/l2tp/l2tp_core.c
++++ b/net/l2tp/l2tp_core.c
+@@ -1041,9 +1041,9 @@ static int l2tp_xmit_core(struct l2tp_session *session, struct sk_buff *skb, uns
+ 	else
+ 		l2tp_build_l2tpv3_header(session, __skb_push(skb, session->hdr_len));
+ 
+-	/* Reset skb netfilter state */
+-	memset(&(IPCB(skb)->opt), 0, sizeof(IPCB(skb)->opt));
+-	IPCB(skb)->flags &= ~(IPSKB_XFRM_TUNNEL_SIZE | IPSKB_XFRM_TRANSFORMED | IPSKB_REROUTED);
++	/* Reset control buffer */
++	memset(skb->cb, 0, sizeof(skb->cb));
++
+ 	nf_reset_ct(skb);
+ 
+ 	/* L2TP uses its own lockdep subclass to avoid lockdep splats caused by
+
