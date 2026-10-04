@@ -10,11 +10,12 @@
 # CPU 0 % idle; am Archer C25 jedes Mal vom Flash. Einzelheiten im Kopf von
 # 100-tunneldigger-reinit-backoff-no-modprobe.patch.
 #
-# Das Paket kommt aus dem Modul packages (freifunk-gluon/packages) und hat
-# selbst kein patches/-Verzeichnis. Die Quellpatch-Datei muss also als neue
+# Gluon 2021.1: das Paket kommt aus dem Gluon-Paketfeed (Modul packages/gluon,
+# freifunk-gluon/packages net/tunneldigger, Quelle 8995046 wie in 2023.2) und
+# hat selbst kein patches/-Verzeichnis. Die Quellpatch-Datei muss also als neue
 # Datei net/tunneldigger/patches/<name> ins Modul. Das geht nur ueber Gluons
 # Modulpatches: dieses Skript baut daraus einen Patch fuer "git am" und legt
-# ihn unter patches/packages/packages/ im Gluon-Baum ab, "make update" spielt
+# ihn unter patches/packages/gluon/ im Gluon-Baum ab, "make update" spielt
 # ihn ein (scripts/patch.sh). Deshalb Phase pre-update. Direkt ins Modul
 # kopiert wuerde die Datei beim naechsten Lauf von "git clean" entfernt.
 #
@@ -28,14 +29,13 @@
 
 SRC_PATCH="100-tunneldigger-reinit-backoff-no-modprobe.patch"
 PKG_FILE="net/tunneldigger/patches/$SRC_PATCH"
-MODULE_DIR="patches/packages/packages"
+MODULE_DIR="patches/packages/gluon"
 TARGET="$MODULE_DIR/0100-tunneldigger-reinit-backoff-no-modprobe.patch"
 
 echo "tunneldigger: Reinit mit Pause, kein modprobe fuer mesh-vpn (Modulpatch)"
 
 [ -f "$PATCH_DIR/$SRC_PATCH" ] || patch_abort "$SRC_PATCH fehlt in patches/."
-# Gluon 2025.1 patcht den packages-Feed selbst nicht mehr, das Verzeichnis fehlt
-# dort. scripts/patch.sh nimmt es trotzdem auf, sobald es existiert.
+# scripts/patch.sh nimmt das Verzeichnis auf, sobald es existiert.
 mkdir -p "$MODULE_DIR" || patch_abort "$MODULE_DIR liess sich nicht anlegen."
 
 # Das Datum steht fest, damit der erzeugte Patch von Lauf zu Lauf gleich
