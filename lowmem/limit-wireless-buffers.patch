@@ -3,16 +3,17 @@ gluon-core: WLAN-Puffer staffeln und fuer 32 MB weiter senken (Sackgasse).
 Gluon 2021.1 setzt fq_memory_limit nur bei <= 32 MB RAM (256 KiB), sonst
 gilt die Kernelvorgabe (4 MB je 11n-PHY). Fuer die Sackgasse (adorfer
 04.10.2026: WLAN-Puffer kleiner) wie in Gluon 2025.1 (8f38662f) gestaffelt,
-mit unserer Abweichung (Deckel 2 MB auch ueber 128 MB) und fuer die
-4/32-Geraete halbiert:
+mit unserer Abweichung (Deckel 2 MB auch ueber 128 MB):
 
-     <=  32 MB RAM ->  128 KiB   (2021.1: 256 KiB)
+     <=  32 MB RAM ->  256 KiB   (wie 2021.1)
      <=  64 MB RAM ->  512 KiB   (2021.1: Kernelvorgabe 4 MB)
      >   64 MB RAM ->    2 MB    (2021.1: Kernelvorgabe 4 MB)
 
-128 KiB sind bei rund 20 MBit/s Nutzdurchsatz eines 2.4-GHz-HT20-Radios
-gut 50 ms Puffer; dagegen steht weniger Rueckstau fuer abgewanderte
-Stationen im Power-Save. Wie 8f38662f zusaetzlich per iw (txq
+Fuer 32 MB waren zuerst 128 KiB gesetzt. Die A/B-Messung am WR841N v9
+(04./05.10.2026, je 6 Runden, Packages-Session) zeigte mit 256 KiB bei vier
+parallelen Client-Downloads rund +30 % (Median 39,1 statt 29,9 MBit/s),
+einzeln rund +10 %, bei MemAvailable-Minimum unter Last 4,9 MB wie mit
+128 KiB. Deshalb wieder 256 KiB. Wie 8f38662f zusaetzlich per iw (txq
 memory_limit, iw 5.0.1 kennt es); Fehler von iw werden still uebergangen,
 der debugfs-Weg bleibt der massgebliche.
 
@@ -27,7 +28,7 @@ der debugfs-Weg bleibt der massgebliche.
  	RAM=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
  	if [ "$RAM" -le $((32*1024)) ]; then
 -		echo 'fq_memory_limit 262144' > "/sys/kernel/debug/ieee80211/$DEVICENAME/aqm"
-+		LIMIT=131072
++		LIMIT=262144
 +	elif [ "$RAM" -le $((64*1024)) ]; then
 +		LIMIT=524288
 +	else

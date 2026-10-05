@@ -29,7 +29,7 @@ PRE_UPDATE=(
 )
 
 POST_UPDATE=(
-  lowmem/limit-wireless-buffers.sh              # WLAN-Puffer nach RAM, 32 MB: 128 KiB
+  lowmem/limit-wireless-buffers.sh              # WLAN-Puffer nach RAM, 32 MB: 256 KiB
   lowflash/squashfs-1024-tiny.sh                # ar71xx-tiny: squashfs 1024 KiB, ~73 KiB Flash weniger
   lowflash/zram-lzo-only.sh                     # kmod-zram ohne ungenutztes lz4, ~13 KiB Flash weniger
   lowflash/upgrade-helpers-tiny.sh              # ar71xx/tiny ohne Upgrade-Helfer fremder Boardfamilien, ~6 KiB
