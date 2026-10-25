@@ -1,7 +1,6 @@
 base-files: fehlende Firmware nicht per sysfs-Fallback nachfragen.
 
-Befund der Paketfeed-Session am FUTRO S550 (x86-64, 26091223bro,
-scratch/2026-09-13-firmware-fallback-bootstall.md): tg3 fordert beim Oeffnen
+Eigener Befund am FUTRO S550 (x86-64, 26091223bro): tg3 fordert beim Oeffnen
 von eth0 tigon/tg3_tso5.bin an, die es im Image nicht gibt. Der Kernel steht
 auf force_sysfs_fallback=1 (CONFIG_FW_LOADER_USER_HELPER_FALLBACK=y, in
 OpenWrt fuer alle Targets) und wartet deshalb bis zu 60 s

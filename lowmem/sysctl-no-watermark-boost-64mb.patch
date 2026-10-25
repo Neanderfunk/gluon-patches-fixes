@@ -1,7 +1,7 @@
 base-files: kein Watermark-Boost auf Geraeten mit 64 MB.
 
-Befund der Paketfeed-Session am Archer C25 v1 (64 MB, ath9k + ath10k),
-scratch/2026-09-12-c25-befund.md: In der OOM-Panik standen die Grenzen der
+Eigener Befund am Archer C25 v1 (64 MB, ath9k + ath10k):
+In der OOM-Panik standen die Grenzen der
 Zone Normal bei min 12288, low 14336, high 16384 kB - jeweils genau 4096 kB
 ueber dem, was vm.min_free_kbytes=8192 (OpenWrt-Vorgabe fuer 64 MB, dieses
 Skript) mit watermark_scale_factor=10 ergibt. Das ist der Watermark-Boost

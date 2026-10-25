@@ -5,7 +5,7 @@ Gluon 2025.1 schaltet in targets/generic config('KERNEL_SWAP', false) ab
 lowmem_64m mitgibt, ins Leere: /dev/zram0 ist da, aber ohne Swap im Kernel
 gibt es kein /proc/swaps.
 
-A/B am TL-WR1043ND v2 (Paketfeed-Session, 02.10.2026, gleiche Uptime):
+A/B am TL-WR1043ND v2 (02.10.2026, gleiche Uptime):
 ohne Swap Refault-Sturm nach 17 MB zusaetzlichem tmpfs, mit zram erst bei
 39 MB (zram dabei hoechstens 5,4 MB RAM fuer ~27 MB Swap). Im Ruhebetrieb
 nur 256 KB geswappt; der Gewinn ist die Reserve bei Spitzen.

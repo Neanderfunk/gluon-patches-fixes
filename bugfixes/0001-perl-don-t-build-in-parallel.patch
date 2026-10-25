@@ -11,7 +11,7 @@ https://github.com/openwrt/packages/pull/17274
  (patches/packages/packages/0001-perl-don-t-build-in-parallel-and-bump-release.patch),
  fuer openwrt-24.10 neu erzeugt. Gluon 2025.1 patcht den packages-Feed nicht
  mehr, upstream baut perl weiter parallel (nur 68c0a57 "make depend").
- Beobachtet 27.09.2026 auf horst, x86-64: ExtUtils/Liblist/Kid.pm des
+ Beobachtet 27.09.2026 auf unserem Bauhost, x86-64: ExtUtils/Liblist/Kid.pm des
  Host-perl halb geschrieben, Paket perl scheitert.]
 
 diff --git a/lang/perl/Makefile b/lang/perl/Makefile

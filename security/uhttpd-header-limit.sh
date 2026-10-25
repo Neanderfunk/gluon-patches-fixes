@@ -8,7 +8,7 @@
 #
 # Der Fix ist in OpenWrt main und openwrt-25.12, NICHT in openwrt-24.10 (uhttpd
 # 7e64e8ba mit Paketpatches 0001-0017). 0018 ist f6c2fcfa unveraendert, passt
-# ohne Versatz hinter 0017. Recherche: router-werkstatt docs/recherche-19.07/.
+# ohne Versatz hinter 0017.
 # Faellt weg, sobald OpenWrt 24.10 den Fix selbst mitbringt (dann scheitert
 # der Paketbau laut an 0018).
 #
