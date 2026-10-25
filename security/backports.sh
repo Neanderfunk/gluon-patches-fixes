@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Sicherheits-Backports fuer Gluon v2023.2.x (OpenWrt 23.05, Kernel 5.15).
-# Recherche: router-werkstatt docs/recherche-19.07/ (04.10.2026). Fuer 2023.2
+# Recherche 04.10.2026. Fuer 2023.2
 # wird nicht mehr gebaut (adorfer), der Code liegt fuer den Fall bereit.
 #
 #   mac80211 900/901   Mesh-CSA NULL-Deref ueber Funk (CVE-2026-23279) und
@@ -17,7 +17,7 @@
 #
 # Stand Gluon v2023.2.x 670b51ba (OpenWrt 33063b4ccf00, routing fa22ff1f).
 # Geprueft am 04.10.2026: fuzz 0 in Bau-Reihenfolge, Kompilierprobe mips_24kc
-# gcc 12.3, uhttpd-Lauftest (Nachweise in scratch/fixes-2023.2/).
+# gcc 12.3, uhttpd-Lauftest.
 #
 # Phase post-update: make update setzt openwrt/ und packages/* zurueck.
 # Wird aus dem Gluon-Verzeichnis heraus aufgerufen, so wie apply.sh es tut.

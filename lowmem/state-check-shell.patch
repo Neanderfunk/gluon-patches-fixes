@@ -8,7 +8,7 @@ gluon.util und posix.unistd.
 Auf Geraeten mit 64 MB RAM und zwei Radios (Archer C25 v1: ath9k + ath10k)
 bleiben fuer den Datei-Cache nur rund 3 MB. Die Lua-Laufzeit fliegt zwischen
 zwei Laeufen aus dem Cache und kommt jede Minute vom SPI-Flash
-(Paketfeed-Session, C25: 890 ms kalt, 150 ms warm, workingset_refault_file
+(C25: 890 ms kalt, 150 ms warm, workingset_refault_file
 323 in 70 s). gluon-state-check war danach der teuerste minuetliche Job.
 
 Den Takt senken geht nicht: neanderfunk-ssid-changer liest has_default_gw4
