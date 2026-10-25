@@ -10,7 +10,7 @@ mit unserer Abweichung (Deckel 2 MB auch ueber 128 MB):
      >   64 MB RAM ->    2 MB    (2021.1: Kernelvorgabe 4 MB)
 
 Fuer 32 MB waren zuerst 128 KiB gesetzt. Die A/B-Messung am WR841N v9
-(04./05.10.2026, je 6 Runden, Packages-Session) zeigte mit 256 KiB bei vier
+(04./05.10.2026, je 6 Runden) zeigte mit 256 KiB bei vier
 parallelen Client-Downloads rund +30 % (Median 39,1 statt 29,9 MBit/s),
 einzeln rund +10 %, bei MemAvailable-Minimum unter Last 4,9 MB wie mit
 128 KiB. Deshalb wieder 256 KiB. Wie 8f38662f zusaetzlich per iw (txq

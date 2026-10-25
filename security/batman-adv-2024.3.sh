@@ -21,7 +21,7 @@
 #
 # Geprueft am 04.10.2026: git am auf den Modulzweig "patched" (routing 820bb60a
 # plus Gluons 0001-0004), alle Paketpatches fuzz 0 auf den 2024.3-Tarball, Bau
-# gegen Kernel 4.14.275 mit gcc 7.5.0. Nachweise in scratch/fixes-2021/batman-2024/.
+# gegen Kernel 4.14.275 mit gcc 7.5.0.
 #
 # Phase pre-update: legt den Patch unter patches/packages/routing/ ab, "make
 # update" spielt ihn per git am ein (wie tunneldigger-reinit-backoff.sh).

@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Sicherheits-Backports fuer Userspace-Pakete der Sackgasse (Gluon 2021.1,
-# OpenWrt 19.07). Recherche: router-werkstatt docs/recherche-19.07/ (04.10.2026).
+# OpenWrt 19.07). Recherche 04.10.2026.
 #
 #   uhttpd 100        Header-Anzahl und -Bytes je Request begrenzen (GHSA-vhx4-
 #                     3p5q-m59q): Statusseite sonst per Speicher-DoS aus dem
@@ -23,7 +23,7 @@
 # patches/-Verzeichnisse der Pakete kopiert, die es ggf. erst anlegt. Jede Datei
 # traegt Original-Commit und Backport-Vermerk im Kopf. Geprueft am 04.10.2026:
 # patch --fuzz=0 in Bau-Reihenfolge gegen die echten Quellstaende, Paketbau
-# mit gcc 7.5.0/musl (Nachweise in scratch/fixes-2021/userspace/).
+# mit gcc 7.5.0/musl.
 #
 # Phase post-update: make update setzt openwrt/ und packages/* zurueck.
 # Wird aus dem Gluon-Verzeichnis heraus aufgerufen, so wie apply.sh es tut.
