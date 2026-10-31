@@ -11,7 +11,7 @@
 # -72226), die im offenen Mesh von aussen ausloesbar sind; 24.10 hat sie alle.
 #
 # Inhalt des Modulpatches (Einzelheiten im Kopf der Patchdatei):
-#   - Basis Gluon-PR #3377 (Linus Luessing; so auch ffac/site v2021.1.x und
+#   - Basis Gluon-PR #3377 (T-X; so auch ffac/site v2021.1.x und
 #     Freifunk Luebeck): 4.14-Compat-Reverts, noflood mark, multicast-router-Hack
 #   - batman-adv/patches 0001-0101 unveraendert aus openwrt-24.10 (78bcc66),
 #     0102-0105 Upstream-Fixes, die in 24.10 noch fehlen

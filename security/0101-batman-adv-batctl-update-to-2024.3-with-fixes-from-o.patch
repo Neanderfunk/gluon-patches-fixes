@@ -11,7 +11,7 @@ Bring batman-adv and batctl of the OpenWrt 19.07 routing feed (Gluon
 v2021.1.x) to version 2024.3 and add the bug and security fixes which the
 OpenWrt routing feed carries for 2024.3 in openwrt-24.10.
 
-Base is Gluon PR #3377 by Linus Lüssing ("batman-adv: update to version
+Base is Gluon PR #3377 by T-X ("batman-adv: update to version
 2024.3", also used by ffac/site v2021.1.x and, via T-X/gluon-batman-adv-next,
 by Freifunk Lübeck): batman-adv 2024.3 with Linux 4.14 compat reverts
 (0490, 0491, 0501-0512), noflood mark (2002) and the Gluon multicast router
