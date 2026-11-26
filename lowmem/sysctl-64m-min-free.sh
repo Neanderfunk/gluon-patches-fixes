@@ -1,22 +1,19 @@
 #!/bin/bash
 #
-# gluon-core: kleinere Fragmentpuffer auf
-# Geraeten mit 64 MB RAM. Backport aus Gluon main (a505f767 + Fix c6ac8914,
-# David Bauer), OHNE dessen min_free_kbytes=2048 (bricht ath10k unter Last);
-# Einzelheiten im Patchkopf.
+# gluon-core: 64-MB-sysctl ohne vm.min_free_kbytes=2048 (bricht ath10k
+# unter Last). Gluons wirksame Fassung (4820b0b0 = c6ac8914) ist seit dem
+# Gluon-Pin ac283dfb im Baum; dieser Patch nimmt nur noch die min_free-Zeile
+# heraus. Einzelheiten im Patchkopf.
 #
 # Wird aus dem Gluon-Verzeichnis heraus aufgerufen, so wie apply.sh es tut:
 #   cd gluon && <dieses Repo>/lowmem/sysctl-64m-min-free.sh
 
 . "$(dirname "${BASH_SOURCE[0]}")/../lib-patch.sh"
 
-echo "gluon-core: sysctl fuer 64-MB-Geraete (Fragmentpuffer, min_free bleibt 8192)"
+echo "gluon-core: sysctl fuer 64-MB-Geraete ohne min_free_kbytes=2048 (bleibt 8192)"
 
-apply_patch "$PATCH_DIR/sysctl-64m-min-free.patch" \
-  "package/gluon-core/luasrc/lib/gluon/upgrade/550-sysctl" \
-  'memory-64m.conf'
+[ -f package/gluon-core/files/lib/gluon/sysctl/memory-64m.conf ] \
+  || patch_abort "memory-64m.conf fehlt - Gluon vor 4820b0b0? Dann braucht es die alte Fassung dieses Patches."
 
-# patch legt neue Dateien ohne Ausfuehrungsrecht an; Gluon uebernimmt die
-# Rechte der Quelle, und ein Upgrade-Skript ohne x-Bit laeuft nicht.
-chmod 755 package/gluon-core/luasrc/lib/gluon/upgrade/550-sysctl \
-  || patch_abort "550-sysctl liess sich nicht ausfuehrbar machen."
+apply_patch "$PATCH_DIR/sysctl-64m-min-free.patch"
+
